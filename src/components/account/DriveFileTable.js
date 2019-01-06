@@ -43,6 +43,7 @@ class DriveFileTable extends React.Component {
                   {file.name}
                 </TableCell>
                 <TableCell>{file.id}</TableCell>
+                <TableCell>{file.mimeType}</TableCell>
                 <TableCell>{humanFileSize(file.size)}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => {

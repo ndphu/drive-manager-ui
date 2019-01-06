@@ -9,6 +9,13 @@ import {humanFileSize} from "../utils/StringUtils";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import downloadService from '../services/DownloadService';
+import Dialog from '@material-ui/core/Dialog/Dialog';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import AppBar from '@material-ui/core/AppBar/AppBar';
+import Toolbar from '@material-ui/core/Toolbar/Toolbar';
+import {BigPlayButton, Player} from 'video-react';
+import CloseIcon from '@material-ui/icons/Close';
+import '../../node_modules/video-react/dist/video-react.css';
 
 const styles = theme => ({
   root: {
@@ -39,6 +46,9 @@ class DriveAccountDetailsPage extends React.Component {
     files: [],
     page: 1,
     size: 50,
+    playDialogOpen: false,
+    playingLink: '',
+    playingTitle: '',
   };
 
   componentDidMount = () => {
@@ -47,7 +57,22 @@ class DriveAccountDetailsPage extends React.Component {
   };
 
   handleFileClick = (file) => {
+    console.log("click file", file);
+    if (file.mimeType === 'video/mp4') {
+      this.showVideo(file);
+    }
+  };
 
+  showVideo = (file) => {
+    accountService.getDownloadLink(this.state.account._id, file.id).then(resp => {
+      const link = resp.link;
+      //console.log("link", link)
+      this.setState({
+        playingLink: link,
+        playingTitle: file.name,
+        playDialogOpen: true,
+      })
+    })
   };
 
   handleDownloadClick = (file) => {
@@ -77,6 +102,10 @@ class DriveAccountDetailsPage extends React.Component {
       }).catch(() => {
       this.setState({refreshingQuota: false});
     });
+  };
+
+  handleClose = () => {
+    this.setState({playDialogOpen: false});
   };
 
   render = () => {
@@ -114,6 +143,30 @@ class DriveAccountDetailsPage extends React.Component {
           />
         </div>
         }
+        <Dialog fullScreen={true}
+                open={this.state.playDialogOpen}
+                onClose={this.handleClose}
+                aria-labelledby="form-dialog-title">
+          <AppBar className={classes.appBar}>
+            <Toolbar variant={'dense'}>
+              <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
+                <CloseIcon/>
+              </IconButton>
+              <Typography variant="h6" color="inherit" className={classes.flex}>
+                {this.state.playingTitle}
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <div style={{height: 48}}/>
+          <Player
+            ref={'player'}
+
+            playsInline={true}
+            preload={'auto'}
+            src={this.state.playingLink}>
+            <BigPlayButton position="center"/>
+          </Player>
+        </Dialog>
       </Paper>
     );
   }

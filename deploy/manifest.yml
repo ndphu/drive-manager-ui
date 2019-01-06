@@ -1,0 +1,8 @@
+---
+applications:
+- name: drive-manager-ui
+  memory: 16M
+  instances: 1
+  command: drive-manager-ui
+  random-route: true
+
