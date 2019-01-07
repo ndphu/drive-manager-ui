@@ -83,6 +83,9 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing.unit,
+    },
   },
 
 });
@@ -90,6 +93,7 @@ const styles = theme => ({
 class App extends React.Component {
   state = {
     downloadingCount: 0,
+    open: false,
   };
 
   componentDidMount = () => {
@@ -135,13 +139,6 @@ class App extends React.Component {
               {document.title}
             </Typography>
             <div className={classes.grow}/>
-            <IconButton color="inherit" onClick={this.handleClickOpen}>
-              {downloadingCount > 0 ? <Badge badgeContent={downloadingCount} color="secondary">
-                  <DownloadIcon/>
-                </Badge> :
-                <DownloadIcon/>
-              }
-            </IconButton>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon/>
@@ -154,12 +151,19 @@ class App extends React.Component {
                 }}
               />
             </div>
+            <IconButton color="inherit" onClick={this.handleClickOpen}>
+              {downloadingCount > 0 ? <Badge badgeContent={downloadingCount} color="secondary">
+                  <DownloadIcon/>
+                </Badge> :
+                <DownloadIcon/>
+              }
+            </IconButton>
           </Toolbar>
         </AppBar>
         <main className={classes.content}>
           <AppRoutes/>
           <Dialog
-            fullWidth={true}
+            fullScreen={true}
             open={this.state.open}
             onClose={this.handleClose}
             aria-labelledby="form-dialog-title"

@@ -5,11 +5,11 @@ import Typography from "@material-ui/core/Typography/Typography";
 import AccountTable from "../components/account/AccountTable";
 import accountService from "../services/AccountService";
 import navigationService from '../services/NavigationService';
-import TableRow from '@material-ui/core/TableRow/TableRow';
-import TablePagination from '@material-ui/core/TablePagination/TablePagination';
-import TableFooter from '@material-ui/core/TableFooter/TableFooter';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
-
+import Hidden from '@material-ui/core/Hidden/Hidden';
+import AccountList from '../components/account/AccoutList'
+import queryString from 'query-string'
+import Button from '@material-ui/core/Button/Button';
 
 const styles = theme => ({
   root: {
@@ -24,6 +24,12 @@ const styles = theme => ({
   },
   footer: {
     width: "100%"
+  },
+  accountName: {
+    ...theme.mixins.gutters(),
+  },
+  pagingContainer: {
+    margin: theme.spacing.unit * 2,
   }
 });
 
@@ -38,17 +44,50 @@ class DriveAccountPage extends React.Component {
   };
 
   componentDidMount = () => {
-    this.setState({loading: true});
-    accountService.getDriveAccounts(this.state.page + 1, this.state.rowsPerPage)
-      .then(resp => this.setState(
-        {
-          accounts: resp.accounts,
-          totalAccount: resp.total,
-          page: resp.page - 1,
-          rowsPerPage: resp.size,
-          loading: false,
-        }));
-    document.title = 'Accounts'
+    const values = queryString.parse(this.props.location.search);
+    const page = values.page ? values.page : 1;
+    const size = values.size ? values.size : 10;
+    this.setState({loading: true}, function () {
+      accountService.getDriveAccounts(page, size)
+        .then(resp => {
+          this.setState(
+            {
+              accounts: resp.accounts,
+              totalAccount: resp.total,
+              page: resp.page,
+              rowsPerPage: resp.size,
+              loading: false,
+            });
+          document.title = 'Accounts';
+        });
+    });
+  };
+
+  componentDidUpdate = (prevProps) => {
+    const values = queryString.parse(prevProps.location.search);
+    const nextValues = queryString.parse(this.props.location.search);
+    const nextPage = nextValues.page ? nextValues.page : 1;
+    const nextSize = nextValues.size ? nextValues.size : 10;
+    if (nextValues.page === values.page && nextValues.size === values.size) {
+      return
+    }
+    if ((nextPage !== values.page && nextPage !== this.state.page)
+      || (nextSize !== values.size && nextSize !== this.state.rowsPerPage)) {
+      this.setState({loading: true}, function () {
+        accountService.getDriveAccounts(nextPage, nextSize)
+          .then(resp => {
+            this.setState(
+              {
+                accounts: resp.accounts,
+                totalAccount: resp.total,
+                page: resp.page,
+                rowsPerPage: resp.size,
+                loading: false,
+              });
+            document.title = 'Accounts';
+          });
+      });
+    }
   };
 
   handleRowClick = (account) => {
@@ -56,29 +95,12 @@ class DriveAccountPage extends React.Component {
 
   };
 
-  handleChangePage = (e, page) => {
-    this.setState({loading: true});
-    accountService.getDriveAccounts(page + 1, this.state.rowsPerPage)
-      .then(resp => this.setState({
-        accounts: resp.accounts,
-        totalAccount: resp.total,
-        page: resp.page - 1,
-        rowsPerPage: resp.size,
-        loading: false,
-      }))
+  handlePreviousClick = () => {
+    navigationService.goToAccountsPage(this.state.page - 1, this.state.rowsPerPage);
   };
 
-  handleChangeRowsPerPage = (event) => {
-    this.setState({loading: true});
-    const rowsPerPage = parseInt(event.target.value);
-    accountService.getDriveAccounts(1, rowsPerPage)
-      .then(resp => this.setState({
-        accounts: resp.accounts,
-        totalAccount: resp.total,
-        page: resp.page - 1,
-        rowsPerPage: resp.size,
-        loading: false,
-      }))
+  handleNextClick = () => {
+    navigationService.goToAccountsPage(this.state.page + 1, this.state.rowsPerPage);
   };
 
   render = () => {
@@ -87,22 +109,46 @@ class DriveAccountPage extends React.Component {
 
     return (
       <Paper className={classes.root} elevation={1} square={true}>
-        <Typography variant="h5" component="h3" color={"primary"}>
-          Storage Account
-        </Typography>
         {accounts && accounts.length > 0 &&
-        <AccountTable accounts={accounts}
-                      onRowClick={this.handleRowClick}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      totalAccount={totalAccount}
-                      handleChangePage={this.handleChangePage}
-                      handleChangeRowsPerPage={this.handleChangeRowsPerPage}
-        />
+        (
+          <div>
+            <Hidden smDown>
+              <AccountTable accounts={accounts}
+                            onRowClick={this.handleRowClick}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            totalAccount={totalAccount}
+              />
+            </Hidden>
+            <Hidden mdUp>
+              <Typography
+                className={classes.accountName}
+                variant="headline"
+                color={"primary"}>
+                Storage Account
+              </Typography>
+              <AccountList accounts={accounts}
+                           onItemClick={this.handleRowClick}/>
+            </Hidden>
+          </div>
+
+        )
         }
+        <div className={classes.divider}/>
+        <div className={classes.pagingContainer}>
+          <Button color={'secondary'}
+                  onClick={this.handlePreviousClick}
+                  disabled={loading || this.state.page <= 1}>
+            Previous
+          </Button>
+          <Button color={'secondary'}
+                  onClick={this.handleNextClick}
+                  disabled={ loading || (accounts && accounts.length < rowsPerPage)}>
+            Next</Button>
+        </div>
 
         {loading && <LinearProgress/>}
-        <div className={classes.divider}/>
+
       </Paper>
     )
   }

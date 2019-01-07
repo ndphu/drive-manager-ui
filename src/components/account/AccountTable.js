@@ -6,8 +6,7 @@ import TableCell from "@material-ui/core/TableCell/TableCell";
 import TableBody from "@material-ui/core/TableBody/TableBody";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {humanFileSize} from '../../utils/StringUtils';
-import TablePagination from '@material-ui/core/TablePagination/TablePagination';
-import TableFooter from '@material-ui/core/TableFooter/TableFooter';
+import Hidden from '@material-ui/core/Hidden/Hidden';
 
 
 const styles = theme => ({
@@ -18,17 +17,16 @@ const styles = theme => ({
 
 class AccountTable extends React.Component {
   render = () => {
-    const {classes, accounts, onRowClick,
-      totalAccount, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage} = this.props;
-
-
+    const {classes, accounts, onRowClick} = this.props;
     return (
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <TableCell>Client Id</TableCell>
-            <TableCell>Client Email</TableCell>
+            <Hidden lgDown>
+              <TableCell>Client Id</TableCell>
+              <TableCell>Email</TableCell>
+            </Hidden>
             <TableCell>Usage</TableCell>
             <TableCell>Limit</TableCell>
           </TableRow>
@@ -46,26 +44,16 @@ class AccountTable extends React.Component {
                 >
                   {account.name}
                 </TableCell>
-                <TableCell>{account.clientId}</TableCell>
-                <TableCell>{account.clientEmail}</TableCell>
+                <Hidden lgDown>
+                  <TableCell>{account.clientId}</TableCell>
+                  <TableCell>{account.clientEmail}</TableCell>
+                </Hidden>
                 <TableCell>{humanFileSize(account.usage)}</TableCell>
                 <TableCell>{humanFileSize(account.limit)}</TableCell>
               </TableRow>
             );
           })}
         </TableBody>
-        <TableFooter className={classes.footer}>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              count={totalAccount}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </TableRow>
-        </TableFooter>
       </Table>
     )
   }

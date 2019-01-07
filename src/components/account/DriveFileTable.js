@@ -8,10 +8,10 @@ import Table from '@material-ui/core/Table/Table';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {humanFileSize} from "../../utils/StringUtils";
+import Hidden from '@material-ui/core/Hidden/Hidden';
 
 const styles = theme => ({
-  tableRow: {
-  }
+  tableRow: {}
 });
 
 class DriveFileTable extends React.Component {
@@ -24,7 +24,10 @@ class DriveFileTable extends React.Component {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <TableCell>Key</TableCell>
+            <Hidden lgDown>
+              <TableCell>Key</TableCell>
+            </Hidden>
+            <TableCell>MIME</TableCell>
             <TableCell>Size</TableCell>
             <TableCell>Download</TableCell>
           </TableRow>
@@ -35,14 +38,18 @@ class DriveFileTable extends React.Component {
               <TableRow key={file.id}
                         hover
                         className={classes.tableRow}
-                        onClick={() => {onRowClick && onRowClick(file)}}
+                        onClick={() => {
+                          onRowClick && onRowClick(file)
+                        }}
               >
                 <TableCell component="th"
                            scope="row"
                 >
                   {file.name}
                 </TableCell>
-                <TableCell>{file.id}</TableCell>
+                <Hidden lgDown>
+                  <TableCell>{file.id}</TableCell>
+                </Hidden>
                 <TableCell>{file.mimeType}</TableCell>
                 <TableCell>{humanFileSize(file.size)}</TableCell>
                 <TableCell>

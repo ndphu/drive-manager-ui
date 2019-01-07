@@ -14,6 +14,9 @@ class NavigationService {
     this.history.push(`/account/${id}`)
   };
 
+  goToAccountsPage(page, rowsPerPage) {
+    this.history.push(`/accounts?page=${page}&size=${rowsPerPage}`)
+  }
 }
 
 const navigationService = new NavigationService();

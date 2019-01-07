@@ -10,12 +10,14 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import downloadService from '../services/DownloadService';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Toolbar from '@material-ui/core/Toolbar/Toolbar';
 import {BigPlayButton, Player} from 'video-react';
 import CloseIcon from '@material-ui/icons/Close';
 import '../../node_modules/video-react/dist/video-react.css';
+import Slide from '@material-ui/core/Slide/Slide';
+import Hidden from '@material-ui/core/Hidden/Hidden';
+import DriveFileList from '../components/account/DriveFileList';
 
 const styles = theme => ({
   root: {
@@ -37,8 +39,17 @@ const styles = theme => ({
   },
   progress: {
     margin: theme.spacing.unit,
+  },
+
+  accountName: {
+    ...theme.mixins.gutters(),
   }
 });
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
 
 class DriveAccountDetailsPage extends React.Component {
 
@@ -115,44 +126,60 @@ class DriveAccountDetailsPage extends React.Component {
       <Paper className={classes.root} elevation={1} square={true}>
         {account &&
         <div>
-          <div className={classes.quotaContainer}>
-            {!refreshingQuota ? <Typography variant="subtitle1" color={'textPrimary'}>
-              Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
-            </Typography> : <Typography variant="subtitle1" color={'textPrimary'}>
-              Refreshing...
-            </Typography>
-            }
+          <Hidden smDown>
+            <div className={classes.quotaContainer}>
+              {!refreshingQuota ? <Typography variant="subtitle1" color={'textPrimary'}>
+                Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
+              </Typography> : <Typography variant="subtitle1" color={'textPrimary'}>
+                Refreshing...
+              </Typography>
+              }
 
-            {!refreshingQuota &&
-            <IconButton color={'secondary'}
-                        onClick={this.refreshQuota}
-            >
-              <RefreshIcon/>
-            </IconButton>
-            }
-          </div>
-          <div className={classes.spacer}/>
-          <LinearProgress color={'secondary'}
-                          variant={'determinate'}
-                          value={parseFloat(account.usage * 100 / account.limit)}
-          />
-          <div className={classes.spacing}/>
-          <DriveFileTable files={files}
-                          onRowClick={this.handleFileClick}
-                          onDownloadClick={this.handleDownloadClick}
-          />
+              {!refreshingQuota &&
+              <IconButton color={'secondary'}
+                          onClick={this.refreshQuota}
+              >
+                <RefreshIcon/>
+              </IconButton>
+              }
+            </div>
+            <div className={classes.spacer}/>
+            <LinearProgress color={'secondary'}
+                            variant={'determinate'}
+                            value={parseFloat(account.usage * 100 / account.limit)}
+            />
+            <div className={classes.spacing}/>
+            <DriveFileTable files={files}
+                            onRowClick={this.handleFileClick}
+                            onDownloadClick={this.handleDownloadClick}
+            />
+          </Hidden>
+
+          <Hidden mdUp>
+            {account && (
+              <Typography className={classes.accountName}
+                          variant="headline"
+                          color={"primary"}>
+                {account.name}
+              </Typography>
+            )}
+
+            <DriveFileList files={files}
+                           onItemClick={this.handleFileClick}/>
+          </Hidden>
         </div>
         }
         <Dialog fullScreen={true}
                 open={this.state.playDialogOpen}
                 onClose={this.handleClose}
-                aria-labelledby="form-dialog-title">
+                aria-labelledby="form-dialog-title"
+                TransitionComponent={Transition}>
           <AppBar className={classes.appBar}>
             <Toolbar variant={'dense'}>
               <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
                 <CloseIcon/>
               </IconButton>
-              <Typography variant="h6" color="inherit" className={classes.flex}>
+              <Typography variant="h6" color="inherit" className={classes.flex} noWrap>
                 {this.state.playingTitle}
               </Typography>
             </Toolbar>
@@ -160,7 +187,6 @@ class DriveAccountDetailsPage extends React.Component {
           <div style={{height: 48}}/>
           <Player
             ref={'player'}
-
             playsInline={true}
             preload={'auto'}
             src={this.state.playingLink}>
