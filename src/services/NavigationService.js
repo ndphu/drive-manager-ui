@@ -17,6 +17,10 @@ class NavigationService {
   goToAccountsPage(page, rowsPerPage) {
     this.history.push(`/accounts?page=${page}&size=${rowsPerPage}`)
   }
+
+  goToVideoView(accountId, fileId) {
+    this.history.push(`/view/video?accountId=${accountId}&fileId=${fileId}`)
+  }
 }
 
 const navigationService = new NavigationService();

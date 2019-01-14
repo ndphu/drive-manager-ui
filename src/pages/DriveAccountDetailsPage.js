@@ -9,15 +9,12 @@ import {humanFileSize} from "../utils/StringUtils";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import downloadService from '../services/DownloadService';
-import Dialog from '@material-ui/core/Dialog/Dialog';
-import AppBar from '@material-ui/core/AppBar/AppBar';
-import Toolbar from '@material-ui/core/Toolbar/Toolbar';
-import {BigPlayButton, Player} from 'video-react';
-import CloseIcon from '@material-ui/icons/Close';
 import '../../node_modules/video-react/dist/video-react.css';
 import Slide from '@material-ui/core/Slide/Slide';
 import Hidden from '@material-ui/core/Hidden/Hidden';
 import DriveFileList from '../components/account/DriveFileList';
+import Divider from '@material-ui/core/Divider/Divider';
+import navigationService from '../services/NavigationService';
 
 const styles = theme => ({
   root: {
@@ -40,10 +37,6 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit,
   },
-
-  accountName: {
-    ...theme.mixins.gutters(),
-  }
 });
 
 function Transition(props) {
@@ -75,15 +68,7 @@ class DriveAccountDetailsPage extends React.Component {
   };
 
   showVideo = (file) => {
-    accountService.getDownloadLink(this.state.account._id, file.id).then(resp => {
-      const link = resp.link;
-      //console.log("link", link)
-      this.setState({
-        playingLink: link,
-        playingTitle: file.name,
-        playDialogOpen: true,
-      })
-    })
+    navigationService.goToVideoView(this.state.account._id, file.id);
   };
 
   handleDownloadClick = (file) => {
@@ -94,14 +79,16 @@ class DriveAccountDetailsPage extends React.Component {
   };
 
   load = () => {
+    const _this = this;
     accountService.getAccountById(this.props.match.params.id)
       .then(account => {
         document.title = account.name;
-        this.setState({account});
-        accountService.getAccountFiles(account._id, this.state.page, this.state.size)
-          .then(files => {
-            this.setState({files})
-          })
+        this.setState({account}, function () {
+          accountService.getAccountFiles(account._id, _this.state.page, _this.state.size)
+            .then(files => {
+              this.setState({files}, _this.refreshQuota)
+            })
+        });
       })
   };
 
@@ -157,11 +144,16 @@ class DriveAccountDetailsPage extends React.Component {
 
           <Hidden mdUp>
             {account && (
-              <Typography className={classes.accountName}
-                          variant="headline"
-                          color={"primary"}>
-                {account.name}
-              </Typography>
+              <div>
+                {!refreshingQuota ? <Typography variant="body2" color={'textPrimary'}>
+                  Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
+                </Typography> : <Typography variant="body2" color={'textPrimary'}>
+                  Refreshing...
+                </Typography>
+                }
+                <div className={classes.spacer}/>
+                <Divider/>
+              </div>
             )}
 
             <DriveFileList files={files}
@@ -169,30 +161,6 @@ class DriveAccountDetailsPage extends React.Component {
           </Hidden>
         </div>
         }
-        <Dialog fullScreen={true}
-                open={this.state.playDialogOpen}
-                onClose={this.handleClose}
-                aria-labelledby="form-dialog-title"
-                TransitionComponent={Transition}>
-          <AppBar className={classes.appBar}>
-            <Toolbar variant={'dense'}>
-              <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
-                <CloseIcon/>
-              </IconButton>
-              <Typography variant="h6" color="inherit" className={classes.flex} noWrap>
-                {this.state.playingTitle}
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <div style={{height: 48}}/>
-          <Player
-            ref={'player'}
-            playsInline={true}
-            preload={'auto'}
-            src={this.state.playingLink}>
-            <BigPlayButton position="center"/>
-          </Player>
-        </Dialog>
       </Paper>
     );
   }

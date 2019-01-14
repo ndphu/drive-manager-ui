@@ -20,6 +20,7 @@ import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import DownloadPage from './pages/DownloadPage';
+import QuickSearch from './components/search/QuickSearch';
 
 const styles = theme => ({
   root: {
@@ -33,12 +34,20 @@ const styles = theme => ({
     marginRight: 20,
   },
   title: {
-    display: 'none',
+    // display: 'none',
+    // [theme.breakpoints.up('sm')]: {
+    //   display: 'block',
+    // },
+  },
+
+  searchButton: {
+    display: 'block',
     [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
+      display: 'none',
+    }
   },
   search: {
+    display: 'none',
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
@@ -50,6 +59,7 @@ const styles = theme => ({
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing.unit,
       width: 'auto',
+      display: 'block',
     },
   },
   searchIcon: {
@@ -94,6 +104,7 @@ class App extends React.Component {
   state = {
     downloadingCount: 0,
     open: false,
+    openSearch: true,
   };
 
   componentDidMount = () => {
@@ -124,10 +135,19 @@ class App extends React.Component {
     this.setState({ open: false });
   };
 
+  handleSearchOpen = () => {
+    this.setState({openSearch: true})
+  };
+
+  handleSearchClose = () => {
+    this.setState({ openSearch: false });
+  };
+
+
 
   render = () => {
     const {classes} = this.props;
-    const {downloadingCount} = this.state;
+    const {downloadingCount, openSearch} = this.state;
     return (
       <div className={classes.root}>
         <AppBar position="static">
@@ -151,6 +171,9 @@ class App extends React.Component {
                 }}
               />
             </div>
+            <IconButton color={'inherit'} className={classes.searchButton} onClick={this.handleSearchOpen}>
+              <SearchIcon/>
+            </IconButton>
             <IconButton color="inherit" onClick={this.handleClickOpen}>
               {downloadingCount > 0 ? <Badge badgeContent={downloadingCount} color="secondary">
                   <DownloadIcon/>
@@ -162,23 +185,39 @@ class App extends React.Component {
         </AppBar>
         <main className={classes.content}>
           <AppRoutes/>
-          <Dialog
-            fullScreen={true}
-            open={this.state.open}
-            onClose={this.handleClose}
-            aria-labelledby="form-dialog-title"
-          >
-            <DialogTitle id="form-dialog-title">Download</DialogTitle>
-            <DialogContent>
-              <DownloadPage/>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.handleClose} color="primary">
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
         </main>
+        <Dialog
+          fullScreen={true}
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Download</DialogTitle>
+          <DialogContent>
+            <DownloadPage/>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          fullScreen={true}
+          open={openSearch}
+          onClose={this.handleSearchClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogContent>
+            <QuickSearch closeSearchCallback={this.handleSearchClose}/>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleSearchClose} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

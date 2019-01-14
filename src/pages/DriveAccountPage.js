@@ -1,7 +1,6 @@
 import React from "react";
 import withStyles from "@material-ui/core/es/styles/withStyles";
 import Paper from "@material-ui/core/Paper/Paper";
-import Typography from "@material-ui/core/Typography/Typography";
 import AccountTable from "../components/account/AccountTable";
 import accountService from "../services/AccountService";
 import navigationService from '../services/NavigationService';
@@ -121,12 +120,12 @@ class DriveAccountPage extends React.Component {
               />
             </Hidden>
             <Hidden mdUp>
-              <Typography
-                className={classes.accountName}
-                variant="headline"
-                color={"primary"}>
-                Storage Account
-              </Typography>
+              {/*<Typography*/}
+                {/*className={classes.accountName}*/}
+                {/*variant="title"*/}
+                {/*color={"primary"}>*/}
+                {/*Accounts*/}
+              {/*</Typography>*/}
               <AccountList accounts={accounts}
                            onItemClick={this.handleRowClick}/>
             </Hidden>
