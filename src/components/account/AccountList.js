@@ -3,15 +3,12 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import List from '@material-ui/core/List/List';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
-import {humanFileSize} from '../../utils/StringUtils';
+import {getAccountUsagePercent, humanFileSize} from '../../utils/StringUtils';
 
 const styles = theme => ({});
 
-function getAccountUsagePercent(account) {
-    if (account && account.limit) {
-        return (Math.floor((account.usage * 100 / account.limit) * 100) / 100) + ' %';
-    }
-    return '0 %';
+const getSecondaryText = (account) => {
+  return `${humanFileSize(account.usage)}/${humanFileSize(account.limit)} (${getAccountUsagePercent(account.usage, account.limit)})`
 }
 
 class AccountList extends React.Component {
@@ -31,7 +28,7 @@ class AccountList extends React.Component {
                                       }}
                             >
                                 <ListItemText primary={account.name}
-                                              secondary={`${humanFileSize(account.usage)}/${humanFileSize(account.limit)} (${getAccountUsagePercent(account)}`}
+                                              secondary={getSecondaryText(account)}
                                 />
                             </ListItem>
                         ))

@@ -111,7 +111,7 @@ class DriveAccountPage extends React.Component {
         {accounts && accounts.length > 0 &&
         (
           <div>
-            <Hidden smDown>
+            <Hidden xsDown>
               <AccountTable accounts={accounts}
                             onRowClick={this.handleRowClick}
                             rowsPerPage={rowsPerPage}
@@ -119,7 +119,7 @@ class DriveAccountPage extends React.Component {
                             totalAccount={totalAccount}
               />
             </Hidden>
-            <Hidden mdUp>
+            <Hidden smUp>
               {/*<Typography*/}
                 {/*className={classes.accountName}*/}
                 {/*variant="title"*/}

@@ -5,7 +5,7 @@ import TableRow from "@material-ui/core/TableRow/TableRow";
 import TableCell from "@material-ui/core/TableCell/TableCell";
 import TableBody from "@material-ui/core/TableBody/TableBody";
 import withStyles from "@material-ui/core/styles/withStyles";
-import {humanFileSize} from '../../utils/StringUtils';
+import {getAccountUsagePercent, humanFileSize} from '../../utils/StringUtils';
 import Hidden from '@material-ui/core/Hidden/Hidden';
 
 
@@ -23,12 +23,15 @@ class AccountTable extends React.Component {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <Hidden lgDown>
+            <Hidden mdDown>
               <TableCell>Client Id</TableCell>
+            </Hidden>
+            <Hidden lgDown>
               <TableCell>Email</TableCell>
             </Hidden>
             <TableCell>Usage</TableCell>
             <TableCell>Limit</TableCell>
+            <TableCell>Percent</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -44,12 +47,15 @@ class AccountTable extends React.Component {
                 >
                   {account.name}
                 </TableCell>
-                <Hidden lgDown>
+                <Hidden mdDown>
                   <TableCell>{account.clientId}</TableCell>
+                </Hidden>
+                <Hidden lgDown>
                   <TableCell>{account.clientEmail}</TableCell>
                 </Hidden>
                 <TableCell>{humanFileSize(account.usage)}</TableCell>
                 <TableCell>{humanFileSize(account.limit)}</TableCell>
+                <TableCell>{getAccountUsagePercent(account.usage, account.limit)}</TableCell>
               </TableRow>
             );
           })}

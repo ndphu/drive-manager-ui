@@ -113,7 +113,7 @@ class DriveAccountDetailsPage extends React.Component {
       <Paper className={classes.root} elevation={1} square={true}>
         {account &&
         <div>
-          <Hidden smDown>
+          <Hidden xsDown>
             <div className={classes.quotaContainer}>
               {!refreshingQuota ? <Typography variant="subtitle1" color={'textPrimary'}>
                 Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
@@ -142,7 +142,7 @@ class DriveAccountDetailsPage extends React.Component {
             />
           </Hidden>
 
-          <Hidden mdUp>
+          <Hidden smUp>
             {account && (
               <div>
                 {!refreshingQuota ? <Typography variant="body2" color={'textPrimary'}>

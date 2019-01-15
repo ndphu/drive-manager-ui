@@ -17,14 +17,14 @@ const styles = theme => ({
 
 class DriveFileList extends React.Component {
     render = () => {
-        const {classes, files, onItemClick} = this.props;
+        const {classes, files, onItemClick, hideDivider, hideSecondary} = this.props;
         return (
             <div>
                 <List>
                     {
                         files.map(file => (
                             <ListItem key={`list-item-drive-file-${file.id}`}
-                                      divider
+                                      divider={!hideDivider}
                                       dense
                                       button
                                       onClick={() => {
@@ -32,7 +32,7 @@ class DriveFileList extends React.Component {
                                       }}
                             >
                                 <ListItemText primary={file.name}
-                                              secondary={`${humanFileSize(file.size)} ${file.mimeType}`}
+                                              secondary={hideSecondary ? '' : `${humanFileSize(file.size)} ${file.mimeType}`}
                                 />
                             </ListItem>
                         ))
