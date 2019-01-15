@@ -1,14 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import InputBase from '@material-ui/core/InputBase/InputBase';
 import TextField from '@material-ui/core/TextField/TextField';
 import searchService from '../../services/SearchService';
 import DriveFileList from '../account/DriveFileList';
-import Divider from '@material-ui/core/Divider/Divider';
-import accountService from '../../services/AccountService';
-import downloadService from '../../services/DownloadService';
 import navigationService from '../../services/NavigationService';
+import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 
 const styles = theme => ({
   inputRoot: {
@@ -47,7 +43,7 @@ class QuickSearch extends React.Component {
     if (e.key === 'Enter') {
       this.performSearch();
     } else {
-      this.keyUpTimer = setTimeout(this.performSearch, 2000);
+      this.keyUpTimer = setTimeout(this.performSearch, 1000);
     }
   };
 
@@ -61,7 +57,7 @@ class QuickSearch extends React.Component {
 
   search = (query) => {
     searchService.searchFiles(query).then(resp => {
-      this.setState({loading: false, files: resp})
+      this.setState({loading: false, files: resp, query: query})
     })
   };
 
@@ -79,14 +75,25 @@ class QuickSearch extends React.Component {
       <div>
         <TextField
           variant={'outlined'}
-          fullWidth={true}
           placeholder={'File name contains...'}
           onChange={this.handleChange('query')}
           onKeyUp={this.monitorKeyUp}
-          disabled={loading}
+          // disabled={loading}
+          fullWidth
+          autoFocus
           >
         </TextField>
-        <div style={{height: 16}}/>
+        {loading ? (
+          <div>
+            <div style={{height: 10}}/>
+            <LinearProgress
+              variant={'indeterminate'}
+              color={'secondary'}
+            />
+          </div>
+
+        ) : <div style={{height: 16}}/>}
+
         {files && <DriveFileList files={files}
                                  onItemClick={this.handleFileClick}
         />}

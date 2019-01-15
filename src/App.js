@@ -104,7 +104,7 @@ class App extends React.Component {
   state = {
     downloadingCount: 0,
     open: false,
-    openSearch: true,
+    openSearch: false,
   };
 
   componentDidMount = () => {
@@ -159,19 +159,21 @@ class App extends React.Component {
               {document.title}
             </Typography>
             <div className={classes.grow}/>
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon/>
-              </div>
-              <InputBase
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-              />
-            </div>
-            <IconButton color={'inherit'} className={classes.searchButton} onClick={this.handleSearchOpen}>
+            {/*<div className={classes.search}>*/}
+              {/*<div className={classes.searchIcon}>*/}
+                {/*<SearchIcon/>*/}
+              {/*</div>*/}
+              {/*<InputBase*/}
+                {/*placeholder="Search…"*/}
+                {/*classes={{*/}
+                  {/*root: classes.inputRoot,*/}
+                  {/*input: classes.inputInput,*/}
+                {/*}}*/}
+              {/*/>*/}
+            {/*</div>*/}
+            <IconButton color={'inherit'}
+                        // className={classes.searchButton}
+                        onClick={this.handleSearchOpen}>
               <SearchIcon/>
             </IconButton>
             <IconButton color="inherit" onClick={this.handleClickOpen}>
