@@ -6,7 +6,7 @@ import accountService from "../services/AccountService";
 import navigationService from '../services/NavigationService';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import Hidden from '@material-ui/core/Hidden/Hidden';
-import AccountList from '../components/account/AccoutList'
+import AccountList from '../components/account/AccountList'
 import queryString from 'query-string'
 import Button from '@material-ui/core/Button/Button';
 
