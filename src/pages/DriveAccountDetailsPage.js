@@ -29,7 +29,6 @@ const styles = theme => ({
   quotaContainer: {
     display: "flex",
     alignItems: "center",
-    height: 56,
   },
   refreshQuotaButton: {
     margin: theme.spacing.unit,
@@ -60,8 +59,13 @@ class DriveAccountDetailsPage extends React.Component {
     this.load();
   };
 
+  componentDidUpdate = (prevProps) => {
+    if (this.props.match.params.id !== prevProps.match.params.id) {
+      this.load()
+    }
+  };
+
   handleFileClick = (file) => {
-    console.log("click file", file);
     if (file.mimeType === 'video/mp4') {
       this.showVideo(file);
     }
@@ -145,11 +149,23 @@ class DriveAccountDetailsPage extends React.Component {
           <Hidden smUp>
             {account && (
               <div>
-                {!refreshingQuota ? <Typography variant="body2" color={'textPrimary'}>
-                  Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
-                </Typography> : <Typography variant="body2" color={'textPrimary'}>
-                  Refreshing...
-                </Typography>
+                <Hidden smUp>
+                  <Typography
+                    className={classes.accountName}
+                    variant="title"
+                    color={"primary"}>
+                    {account.name}
+                  </Typography>
+                </Hidden>
+                {!refreshingQuota ?
+                  <Typography variant="subtitle2"
+                              color={'textSecondary'}>
+                    Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
+                  </Typography> :
+                  <Typography variant="subtitle2"
+                              color={'textSecondary'}>
+                    Refreshing...
+                  </Typography>
                 }
                 <div className={classes.spacer}/>
                 <Divider/>

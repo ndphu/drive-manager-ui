@@ -9,6 +9,7 @@ import Hidden from '@material-ui/core/Hidden/Hidden';
 import AccountList from '../components/account/AccountList'
 import queryString from 'query-string'
 import Button from '@material-ui/core/Button/Button';
+import Typography from '@material-ui/core/Typography/Typography';
 
 const styles = theme => ({
   root: {
@@ -38,7 +39,6 @@ class DriveAccountPage extends React.Component {
     accounts: [],
     page: 0,
     rowsPerPage: 10,
-    totalAccount: 0,
     loading: false,
   };
 
@@ -52,7 +52,7 @@ class DriveAccountPage extends React.Component {
           this.setState(
             {
               accounts: resp.accounts,
-              totalAccount: resp.total,
+              hasMore: resp.hasMore,
               page: resp.page,
               rowsPerPage: resp.size,
               loading: false,
@@ -78,7 +78,7 @@ class DriveAccountPage extends React.Component {
             this.setState(
               {
                 accounts: resp.accounts,
-                totalAccount: resp.total,
+                hasMore: resp.hasMore,
                 page: resp.page,
                 rowsPerPage: resp.size,
                 loading: false,
@@ -104,7 +104,7 @@ class DriveAccountPage extends React.Component {
 
   render = () => {
     const {classes} = this.props;
-    const {accounts, rowsPerPage, page, totalAccount, loading} = this.state;
+    const {accounts, rowsPerPage, page, hasMore, loading} = this.state;
 
     return (
       <Paper className={classes.root} elevation={1} square={true}>
@@ -116,16 +116,15 @@ class DriveAccountPage extends React.Component {
                             onRowClick={this.handleRowClick}
                             rowsPerPage={rowsPerPage}
                             page={page}
-                            totalAccount={totalAccount}
               />
             </Hidden>
             <Hidden smUp>
-              {/*<Typography*/}
-                {/*className={classes.accountName}*/}
-                {/*variant="title"*/}
-                {/*color={"primary"}>*/}
-                {/*Accounts*/}
-              {/*</Typography>*/}
+              <Typography
+                className={classes.accountName}
+                variant="title"
+                color={"primary"}>
+                Accounts
+              </Typography>
               <AccountList accounts={accounts}
                            onItemClick={this.handleRowClick}/>
             </Hidden>
@@ -142,7 +141,7 @@ class DriveAccountPage extends React.Component {
           </Button>
           <Button color={'secondary'}
                   onClick={this.handleNextClick}
-                  disabled={ loading || (accounts && accounts.length < rowsPerPage)}>
+                  disabled={loading || !hasMore}>
             Next</Button>
         </div>
 

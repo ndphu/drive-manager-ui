@@ -11,6 +11,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayList
 import List from '@material-ui/core/List/List';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader/ListSubheader';
 
 const styles = theme => ({
   inputRoot: {
@@ -34,7 +35,14 @@ const styles = theme => ({
 
   popper: {
     marginTop: 2,
-  }
+  },
+  searchContainer: {
+    maxHeight: 600,
+    overflowY: 'auto',
+    [theme.breakpoints.down('md')]: {
+      maxHeight: 420,
+    },
+  },
 });
 
 class QuickSearchField extends React.Component {
@@ -64,6 +72,11 @@ class QuickSearchField extends React.Component {
     });
   };
 
+  handleAccountClick = account => {
+    this.handleClose()
+    navigationService.goToAccount(account._id)
+  };
+
   monitorKeyUp = (e) => {
     this.setState({
       anchorEl: e.currentTarget,
@@ -88,8 +101,9 @@ class QuickSearchField extends React.Component {
 
   search = (query) => {
     if (query) {
-      searchService.searchFiles(query).then(resp => {
-        this.setState({loading: false, files: resp, noResults: resp.length === 0})
+      searchService.quickSearch(query).then(resp => {
+        this.setState({loading: false, files: resp.files, accounts: resp.accounts,
+          noResults: resp.files.length === 0 && resp.accounts.length === 0})
       })
     }
   };
@@ -105,7 +119,7 @@ class QuickSearchField extends React.Component {
 
   render() {
     const {classes} = this.props;
-    const {anchorEl, files, loading, noResults} = this.state;
+    const {anchorEl, files, loading, noResults, accounts} = this.state;
     const open = anchorEl && !loading;
     const id = open ? 'simple-popper' : null;
 
@@ -130,8 +144,30 @@ class QuickSearchField extends React.Component {
           {({TransitionProps}) => (
             <Fade {...TransitionProps} timeout={50}>
               <ClickAwayListener onClickAway={this.handleClickAway}>
-                <Paper>
+                <Paper className={classes.searchContainer}>
                   <List dense>
+                    {accounts && accounts.length > 0 &&
+                    <ListSubheader color={'secondary'} disableSticky>
+                      Account
+                    </ListSubheader>
+                    }
+                    {accounts && accounts.map(account => {
+                      return (
+                        <ListItem key={`search-result-account-id-${account._id}`}
+                                  button
+                                  dense
+                                  onClick={()=>{this.handleAccountClick(account);}}>
+                          <ListItemText primary={account.name}/>
+                        </ListItem>
+                      )
+                    })}
+                  </List>
+                  <List dense>
+                    {files && files.length > 0 &&
+                    <ListSubheader color={'secondary'} disableSticky>
+                      File
+                    </ListSubheader>
+                    }
                     {files && files.map(file => {
                       return (
                         <ListItem key={`search-result-file-id-${file.id}`}
@@ -142,15 +178,15 @@ class QuickSearchField extends React.Component {
                         </ListItem>
                       )
                     })}
-                    {
-                      noResults && (
-                        <ListItem dense>
-                          <ListItemText primary={'no matching results'}
-                                        />
-                        </ListItem>
-                      )
-                    }
                   </List>
+                  {
+                    noResults && (
+                      <ListItem dense>
+                        <ListItemText primary={'no matching results'}
+                        />
+                      </ListItem>
+                    )
+                  }
                 </Paper>
               </ClickAwayListener>
             </Fade>
