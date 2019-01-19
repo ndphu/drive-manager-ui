@@ -12,6 +12,9 @@ import List from '@material-ui/core/List/List';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader/ListSubheader';
+import IconButton from '@material-ui/core/IconButton/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Snackbar from '@material-ui/core/Snackbar/Snackbar';
 
 const styles = theme => ({
   inputRoot: {
@@ -33,9 +36,7 @@ const styles = theme => ({
     margin: theme.spacing.unit * 2,
   },
 
-  popper: {
-    marginTop: 2,
-  },
+  popper: {},
   searchContainer: {
     maxHeight: 600,
     overflowY: 'auto',
@@ -72,11 +73,6 @@ class QuickSearchField extends React.Component {
     });
   };
 
-  handleAccountClick = account => {
-    this.handleClose()
-    navigationService.goToAccount(account._id)
-  };
-
   monitorKeyUp = (e) => {
     this.setState({
       anchorEl: e.currentTarget,
@@ -102,8 +98,10 @@ class QuickSearchField extends React.Component {
   search = (query) => {
     if (query) {
       searchService.quickSearch(query).then(resp => {
-        this.setState({loading: false, files: resp.files, accounts: resp.accounts,
-          noResults: resp.files.length === 0 && resp.accounts.length === 0})
+        this.setState({
+          loading: false, files: resp.files, accounts: resp.accounts,
+          openSnackbar: resp.files.length === 0 && resp.accounts.length === 0
+        })
       })
     }
   };
@@ -117,9 +115,22 @@ class QuickSearchField extends React.Component {
     navigationService.goToVideoView(file.driveAccount, file.driveId);
   };
 
+  handleAccountClick = account => {
+    this.handleClose();
+    navigationService.goToAccount(account._id)
+  };
+
+  handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ openSnackbar: false });
+  };
+
   render() {
     const {classes} = this.props;
-    const {anchorEl, files, loading, noResults, accounts} = this.state;
+    const {anchorEl, files, loading, noResults, accounts, query} = this.state;
     const open = anchorEl && !loading;
     const id = open ? 'simple-popper' : null;
 
@@ -144,7 +155,9 @@ class QuickSearchField extends React.Component {
           {({TransitionProps}) => (
             <Fade {...TransitionProps} timeout={50}>
               <ClickAwayListener onClickAway={this.handleClickAway}>
-                <Paper className={classes.searchContainer}>
+                <Paper
+                  elevation={4}
+                  className={classes.searchContainer}>
                   <List dense>
                     {accounts && accounts.length > 0 &&
                     <ListSubheader color={'secondary'} disableSticky>
@@ -156,7 +169,9 @@ class QuickSearchField extends React.Component {
                         <ListItem key={`search-result-account-id-${account._id}`}
                                   button
                                   dense
-                                  onClick={()=>{this.handleAccountClick(account);}}>
+                                  onClick={() => {
+                                    this.handleAccountClick(account);
+                                  }}>
                           <ListItemText primary={account.name}/>
                         </ListItem>
                       )
@@ -173,25 +188,44 @@ class QuickSearchField extends React.Component {
                         <ListItem key={`search-result-file-id-${file.id}`}
                                   button
                                   dense
-                                  onClick={()=>{this.handleFileClick(file);}}>
+                                  onClick={() => {
+                                    this.handleFileClick(file);
+                                  }}>
                           <ListItemText primary={file.name}/>
                         </ListItem>
                       )
                     })}
                   </List>
-                  {
-                    noResults && (
-                      <ListItem dense>
-                        <ListItemText primary={'no matching results'}
-                        />
-                      </ListItem>
-                    )
-                  }
                 </Paper>
               </ClickAwayListener>
             </Fade>
           )}
         </Popper>
+
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={this.state.openSnackbar}
+          autoHideDuration={2000}
+          onClose={this.handleSnackbarClose}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">No results found for <span color={'secondary'}>{query}</span></span>}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              className={classes.close}
+              onClick={this.handleSnackbarClose}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
+        />
 
       </div>
     );
