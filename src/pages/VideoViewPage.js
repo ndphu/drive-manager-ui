@@ -4,6 +4,12 @@ import {BigPlayButton, Player} from 'video-react';
 import accountService from '../services/AccountService';
 import queryString from 'query-string';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
+import Button from '@material-ui/core/Button/Button';
+import CopyIcon from '@material-ui/icons/FileCopy'
+import IconButton from '@material-ui/core/IconButton/IconButton';
+import CloseIcon from '@material-ui/core/SvgIcon/SvgIcon';
+import Snackbar from '@material-ui/core/Snackbar/Snackbar';
+import OpenIcon from '@material-ui/icons/OpenInNew'
 
 const styles = theme => ({
   root: {
@@ -11,10 +17,20 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
   },
+  button: {
+    margin: theme.spacing.unit,
+  },
+
+  rightIcon: {
+    marginLeft: theme.spacing.unit,
+  },
+
 });
 
 class VideoViewPage extends React.Component {
   state = {};
+
+
 
   componentDidMount = () => {
     const values = queryString.parse(this.props.location.search);
@@ -44,6 +60,31 @@ class VideoViewPage extends React.Component {
     });
   };
 
+  handleCopyLinkClick = () => {
+    // Create new element
+    let el = document.createElement('textarea');
+    el.value = this.state.playingLink;
+    el.setAttribute('readonly', '');
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    this.setState({openSnackbar: true})
+  };
+
+  handleSnackbarClose = () => {
+    this.setState({openSnackbar: false})
+  };
+
+  handleOpenLinkNewTab = () => {
+    let el = document.createElement('a');
+    el.href = this.state.playingLink;
+    el.target = "_blank";
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+  };
+
   render = () => {
     const {classes} = this.props;
     const {playingLink, loading} = this.state;
@@ -63,7 +104,50 @@ class VideoViewPage extends React.Component {
           src={playingLink}>
           <BigPlayButton position="center"/>
         </Player>}
-
+        <Button
+          variant="raised"
+          color="secondary"
+          className={classes.button}
+          onClick={this.handleOpenLinkNewTab}
+          disabled={!playingLink}
+        >
+          Open On New Tab
+          <OpenIcon className={classes.rightIcon} />
+        </Button>
+        <Button
+          variant="raised"
+          color="secondary"
+          className={classes.button}
+          onClick={this.handleCopyLinkClick}
+          disabled={!playingLink}
+          >
+          Copy Link
+          <CopyIcon className={classes.rightIcon} />
+        </Button>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          open={this.state.openSnackbar}
+          autoHideDuration={2000}
+          onClose={this.handleSnackbarClose}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">Link Copied!</span>}
+          action={[
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              className={classes.close}
+              onClick={this.handleSnackbarClose}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
+        />
       </div>
     );
   }
