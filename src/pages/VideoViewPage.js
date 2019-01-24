@@ -10,8 +10,12 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import CloseIcon from '@material-ui/core/SvgIcon/SvgIcon';
 import Snackbar from '@material-ui/core/Snackbar/Snackbar';
 import OpenIcon from '@material-ui/icons/OpenInNew'
+import CopyIcon from '@material-ui/icons/FileCopy'
 import Typography from '@material-ui/core/Typography/Typography';
 import Hidden from '@material-ui/core/Hidden/Hidden';
+import Card from '@material-ui/core/Card/Card';
+import CardContent from '@material-ui/core/CardContent/CardContent';
+import CardActions from '@material-ui/core/CardActions/CardActions';
 
 const styles = theme => ({
   root: {
@@ -23,6 +27,10 @@ const styles = theme => ({
 
   rightIcon: {
     marginLeft: theme.spacing.unit,
+  },
+
+  sharableLink: {
+    padding: theme.spacing.unit,
   },
 
   fileDetails: {
@@ -62,7 +70,7 @@ class VideoViewPage extends React.Component {
     });
   };
 
-  handleCopyLinkClick = () => {
+  handleShareClick = () => {
     const current = queryString.parse(this.props.location.search);
     accountService.getSharableLink(current.accountId, current.fileId).then(resp => {
       this.setState({
@@ -70,6 +78,17 @@ class VideoViewPage extends React.Component {
         sharableLink: resp.link,
       })
     })
+  };
+
+  handleCopyLinkClick = () => {
+    let el = document.createElement('textarea');
+    el.value = this.state.sharableLink;
+    el.setAttribute('readonly', '');
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    this.setState({openSnackbar: true})
   };
 
   handleSnackbarClose = () => {
@@ -97,49 +116,66 @@ class VideoViewPage extends React.Component {
           />
         )}
         {!loading && playingLink &&
-          <div>
-            <Player
-              ref={'player'}
-              playsInline={true}
-              preload={'auto'}
-              src={playingLink}>
-              <BigPlayButton position="center"/>
-            </Player>
-            <div className={classes.fileDetails}>
-              <Hidden smUp>
+        <div>
+          <Player
+            ref={'player'}
+            playsInline={true}
+            preload={'auto'}
+            src={playingLink}>
+            <BigPlayButton position="center"/>
+          </Player>
+          <div className={classes.fileDetails}>
+            <Hidden smUp>
+              <Typography
+                className={classes.accountName}
+                variant="title"
+                color={"primary"}>
+                {file.name}
+              </Typography>
+            </Hidden>
+            <Button
+              variant="raised"
+              color="secondary"
+              className={classes.button}
+              onClick={this.handleShareClick}
+              disabled={!playingLink}
+            >
+              Share
+              <ShareIcon className={classes.rightIcon}/>
+            </Button>
+            <Button
+              variant="raised"
+              color="secondary"
+              className={classes.button}
+              onClick={this.handleOpenLinkNewTab}
+              disabled={!playingLink}
+            >
+              Open On New Tab
+              <OpenIcon className={classes.rightIcon}/>
+            </Button>
+            {sharableLink &&
+            <Card>
+              <CardContent>
                 <Typography
-                  className={classes.accountName}
-                  variant="title"
-                  color={"primary"}>
-                  {file.name}
+                  className={classes.sharableLink}
+                  color={'textSecondary'}
+                  variant={'caption'}>
+                  {sharableLink}
                 </Typography>
-              </Hidden>
+              </CardContent>
               <Button
-                variant="raised"
-                color="secondary"
+                variant="flat"
+                color={'secondary'}
                 className={classes.button}
                 onClick={this.handleCopyLinkClick}
-                disabled={!playingLink}
+                disabled={!sharableLink}
               >
-                Share
-                <ShareIcon className={classes.rightIcon} />
+                Copy
+                <CopyIcon className={classes.rightIcon}/>
               </Button>
-              <Button
-                variant="raised"
-                color="secondary"
-                className={classes.button}
-                onClick={this.handleOpenLinkNewTab}
-                disabled={!playingLink}
-              >
-                Open On New Tab
-                <OpenIcon className={classes.rightIcon} />
-              </Button>
-              {sharableLink && <Typography noWrap
-                                           color={'textSecondary'}
-                                           variant={'caption'}
-              >{sharableLink}</Typography>}
-            </div>
-          </div>}
+            </Card>}
+          </div>
+        </div>}
 
         <Snackbar
           anchorOrigin={{
@@ -161,7 +197,7 @@ class VideoViewPage extends React.Component {
               className={classes.close}
               onClick={this.handleSnackbarClose}
             >
-              <CloseIcon />
+              <CloseIcon/>
             </IconButton>,
           ]}
         />
