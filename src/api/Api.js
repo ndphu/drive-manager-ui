@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import config from './Config.js';
+import navigationService from '../services/NavigationService';
 
 class Api {
   buildHeaders() {
@@ -17,19 +18,13 @@ class Api {
     }).then(resp => {
       if (resp.status === 401) {
         window.location.href = config.unauthorizedPath;
+      } else if (resp.status === 404) {
+        navigationService.goTo(config.notFoundPath);
       } else {
         return resp.json();
       }
     });
   };
-
-
-  getFetch(path) {
-    return fetch(config.baseUrl + path, {
-      method: 'GET',
-      headers: this.buildHeaders()
-    });
-  }
 
   post = (path, body, raw) => {
     const input = config.baseUrl + path;

@@ -14,8 +14,10 @@ import Typography from '@material-ui/core/Typography/Typography';
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
+    margin: theme.spacing.unit * 2,
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing.unit,
+    },
   },
   divider: {
     ...theme.mixins.gutters(),

@@ -19,8 +19,10 @@ import navigationService from '../services/NavigationService';
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
+    margin: theme.spacing.unit * 2,
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing.unit,
+    },
   },
   spacer: {
     marginTop: theme.spacing.unit * 2,

@@ -5,17 +5,17 @@ import accountService from '../services/AccountService';
 import queryString from 'query-string';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import Button from '@material-ui/core/Button/Button';
-import CopyIcon from '@material-ui/icons/FileCopy'
+import ShareIcon from '@material-ui/icons/Share'
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import CloseIcon from '@material-ui/core/SvgIcon/SvgIcon';
 import Snackbar from '@material-ui/core/Snackbar/Snackbar';
 import OpenIcon from '@material-ui/icons/OpenInNew'
+import Typography from '@material-ui/core/Typography/Typography';
+import Hidden from '@material-ui/core/Hidden/Hidden';
 
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
   },
   button: {
     margin: theme.spacing.unit,
@@ -25,12 +25,13 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit,
   },
 
+  fileDetails: {
+    margin: theme.spacing.unit,
+  }
 });
 
 class VideoViewPage extends React.Component {
   state = {};
-
-
 
   componentDidMount = () => {
     const values = queryString.parse(this.props.location.search);
@@ -51,25 +52,24 @@ class VideoViewPage extends React.Component {
     const _this = this;
     this.setState({loading: true}, function () {
       accountService.getDownloadLink(accountId, fileId).then(resp => {
-        const link = resp.link;
+        document.title = resp.file.name;
         _this.setState({
           loading: false,
-          playingLink: link,
+          file: resp.file,
+          playingLink: resp.link,
         })
       })
     });
   };
 
   handleCopyLinkClick = () => {
-    // Create new element
-    let el = document.createElement('textarea');
-    el.value = this.state.playingLink;
-    el.setAttribute('readonly', '');
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    this.setState({openSnackbar: true})
+    const current = queryString.parse(this.props.location.search);
+    accountService.getSharableLink(current.accountId, current.fileId).then(resp => {
+      this.setState({
+        file: resp.file,
+        sharableLink: resp.link,
+      })
+    })
   };
 
   handleSnackbarClose = () => {
@@ -87,7 +87,7 @@ class VideoViewPage extends React.Component {
 
   render = () => {
     const {classes} = this.props;
-    const {playingLink, loading} = this.state;
+    const {playingLink, loading, sharableLink, file} = this.state;
     return (
       <div>
         {loading && (
@@ -97,33 +97,50 @@ class VideoViewPage extends React.Component {
           />
         )}
         {!loading && playingLink &&
-        <Player
-          ref={'player'}
-          playsInline={true}
-          preload={'auto'}
-          src={playingLink}>
-          <BigPlayButton position="center"/>
-        </Player>}
-        <Button
-          variant="raised"
-          color="secondary"
-          className={classes.button}
-          onClick={this.handleOpenLinkNewTab}
-          disabled={!playingLink}
-        >
-          Open On New Tab
-          <OpenIcon className={classes.rightIcon} />
-        </Button>
-        <Button
-          variant="raised"
-          color="secondary"
-          className={classes.button}
-          onClick={this.handleCopyLinkClick}
-          disabled={!playingLink}
-          >
-          Copy Link
-          <CopyIcon className={classes.rightIcon} />
-        </Button>
+          <div>
+            <Player
+              ref={'player'}
+              playsInline={true}
+              preload={'auto'}
+              src={playingLink}>
+              <BigPlayButton position="center"/>
+            </Player>
+            <div className={classes.fileDetails}>
+              <Hidden smUp>
+                <Typography
+                  className={classes.accountName}
+                  variant="title"
+                  color={"primary"}>
+                  {file.name}
+                </Typography>
+              </Hidden>
+              <Button
+                variant="raised"
+                color="secondary"
+                className={classes.button}
+                onClick={this.handleCopyLinkClick}
+                disabled={!playingLink}
+              >
+                Share
+                <ShareIcon className={classes.rightIcon} />
+              </Button>
+              <Button
+                variant="raised"
+                color="secondary"
+                className={classes.button}
+                onClick={this.handleOpenLinkNewTab}
+                disabled={!playingLink}
+              >
+                Open On New Tab
+                <OpenIcon className={classes.rightIcon} />
+              </Button>
+              {sharableLink && <Typography noWrap
+                                           color={'textSecondary'}
+                                           variant={'caption'}
+              >{sharableLink}</Typography>}
+            </div>
+          </div>}
+
         <Snackbar
           anchorOrigin={{
             vertical: 'bottom',

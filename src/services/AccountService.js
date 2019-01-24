@@ -30,7 +30,11 @@ class AccountService {
 
   refreshQuota = (id) => {
     return api.get(`/manage/driveAccount/${id}/refreshQuota`);
-  }
+  };
+
+  getSharableLink = (accountId, fileId) => {
+    return api.get(`/manage/driveAccount/${accountId}/file/${fileId}/sharableLink`);
+  };
 }
 
 

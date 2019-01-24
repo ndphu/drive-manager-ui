@@ -1,6 +1,6 @@
 class NavigationService {
 
-  recentSearches = []
+  recentSearches = [];
 
   setLocation = (location) => {
     this.location = location;
@@ -21,6 +21,11 @@ class NavigationService {
   goToVideoView(accountId, fileId) {
     this.history.push(`/view/video?accountId=${accountId}&fileId=${fileId}`)
   }
+
+  goTo = (path) => {
+    this.history.push(path);
+  };
+
 }
 
 const navigationService = new NavigationService();
