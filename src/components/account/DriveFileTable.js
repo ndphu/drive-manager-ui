@@ -29,7 +29,9 @@ class DriveFileTable extends React.Component {
             </Hidden>
             <TableCell>MIME</TableCell>
             <TableCell>Size</TableCell>
-            <TableCell>Download</TableCell>
+            <Hidden mdDown>
+              <TableCell>Download</TableCell>
+            </Hidden>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -50,7 +52,9 @@ class DriveFileTable extends React.Component {
                 <Hidden lgDown>
                   <TableCell>{file.id}</TableCell>
                 </Hidden>
-                <TableCell>{file.mimeType}</TableCell>
+                <Hidden mdDown>
+                  <TableCell>{file.mimeType}</TableCell>
+                </Hidden>
                 <TableCell>{humanFileSize(file.size)}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => {

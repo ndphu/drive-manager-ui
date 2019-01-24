@@ -56,7 +56,7 @@ class QuickSearch extends React.Component {
   };
 
   search = (query) => {
-    searchService.searchFiles(query).then(resp => {
+    searchService.quickSearch(query).then(resp => {
       this.setState({loading: false, files: resp, query: query})
     })
   };
