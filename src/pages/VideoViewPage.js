@@ -6,16 +6,10 @@ import queryString from 'query-string';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import Button from '@material-ui/core/Button/Button';
 import ShareIcon from '@material-ui/icons/Share'
-import IconButton from '@material-ui/core/IconButton/IconButton';
-import CloseIcon from '@material-ui/core/SvgIcon/SvgIcon';
 import Snackbar from '@material-ui/core/Snackbar/Snackbar';
 import OpenIcon from '@material-ui/icons/OpenInNew'
-import CopyIcon from '@material-ui/icons/FileCopy'
 import Typography from '@material-ui/core/Typography/Typography';
-import Hidden from '@material-ui/core/Hidden/Hidden';
-import Card from '@material-ui/core/Card/Card';
-import CardContent from '@material-ui/core/CardContent/CardContent';
-import CardActions from '@material-ui/core/CardActions/CardActions';
+import {copyTextToClipBoard} from '../utils/StringUtils';
 
 const styles = theme => ({
   root: {
@@ -34,7 +28,10 @@ const styles = theme => ({
   },
 
   fileDetails: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit * 2,
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing.unit,
+    },
   }
 });
 
@@ -72,23 +69,17 @@ class VideoViewPage extends React.Component {
 
   handleShareClick = () => {
     const current = queryString.parse(this.props.location.search);
-    accountService.getSharableLink(current.accountId, current.fileId).then(resp => {
-      this.setState({
-        file: resp.file,
-        sharableLink: resp.link,
+    this.setState({loading: true}, function () {
+      copyTextToClipBoard(`https://drive.google.com/file/d/${current.fileId}/view`);
+      accountService.getSharableLink(current.accountId,current.fileId).then(resp => {
+        this.setState({
+          file: resp.file,
+          sharableLink: resp.link,
+          loading: false,
+          openSnackbar: true,
+        })
       })
-    })
-  };
-
-  handleCopyLinkClick = () => {
-    let el = document.createElement('textarea');
-    el.value = this.state.sharableLink;
-    el.setAttribute('readonly', '');
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    this.setState({openSnackbar: true})
+    });
   };
 
   handleSnackbarClose = () => {
@@ -115,7 +106,7 @@ class VideoViewPage extends React.Component {
             color={'secondary'}
           />
         )}
-        {!loading && playingLink &&
+        {playingLink &&
         <div>
           <Player
             ref={'player'}
@@ -125,20 +116,18 @@ class VideoViewPage extends React.Component {
             <BigPlayButton position="center"/>
           </Player>
           <div className={classes.fileDetails}>
-            <Hidden smUp>
-              <Typography
-                className={classes.accountName}
-                variant="title"
-                color={"primary"}>
-                {file.name}
-              </Typography>
-            </Hidden>
+            <Typography
+              className={classes.accountName}
+              variant="headline"
+              color={"primary"}>
+              {file.name}
+            </Typography>
             <Button
               variant="raised"
               color="secondary"
               className={classes.button}
               onClick={this.handleShareClick}
-              disabled={!playingLink}
+              disabled={!playingLink || loading}
             >
               Share
               <ShareIcon className={classes.rightIcon}/>
@@ -153,27 +142,6 @@ class VideoViewPage extends React.Component {
               Open On New Tab
               <OpenIcon className={classes.rightIcon}/>
             </Button>
-            {sharableLink &&
-            <Card>
-              <CardContent>
-                <Typography
-                  className={classes.sharableLink}
-                  color={'textSecondary'}
-                  variant={'caption'}>
-                  {sharableLink}
-                </Typography>
-              </CardContent>
-              <Button
-                variant="flat"
-                color={'secondary'}
-                className={classes.button}
-                onClick={this.handleCopyLinkClick}
-                disabled={!sharableLink}
-              >
-                Copy
-                <CopyIcon className={classes.rightIcon}/>
-              </Button>
-            </Card>}
           </div>
         </div>}
 
@@ -188,17 +156,19 @@ class VideoViewPage extends React.Component {
           ContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">Link Copied!</span>}
+          message={<span id="message-id">Link Copied To Clipboard!</span>}
           action={[
-            <IconButton
+            <Button
+              variant={'flat'}
+              size={'small'}
               key="close"
               aria-label="Close"
-              color="inherit"
+              color="secondary"
               className={classes.close}
               onClick={this.handleSnackbarClose}
             >
-              <CloseIcon/>
-            </IconButton>,
+              Dismiss
+            </Button>,
           ]}
         />
       </div>

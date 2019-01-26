@@ -26,6 +26,9 @@ class NavigationService {
     this.history.push(path);
   };
 
+  goToAccounts = () => {
+    this.history.push('/accounts');
+  };
 }
 
 const navigationService = new NavigationService();

@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import DriveFileTable from '../components/account/DriveFileTable';
 import {humanFileSize} from "../utils/StringUtils";
-import RefreshIcon from '@material-ui/icons/Refresh';
-import IconButton from '@material-ui/core/IconButton/IconButton';
 import downloadService from '../services/DownloadService';
 import '../../node_modules/video-react/dist/video-react.css';
 import Slide from '@material-ui/core/Slide/Slide';
@@ -23,6 +21,14 @@ const styles = theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing.unit,
     },
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
+  },
+  accountName: {
+    ...theme.mixins.gutters(),
+  },
+  textGutter: {
+    ...theme.mixins.gutters(),
   },
   spacer: {
     marginTop: theme.spacing.unit * 2,
@@ -116,24 +122,26 @@ class DriveAccountDetailsPage extends React.Component {
     const {classes} = this.props;
     const {account, files, refreshingQuota} = this.state;
     return (
-      <Paper className={classes.root} elevation={1} square={true}>
+      <Paper className={classes.root} elevation={1}>
         {account &&
         <div>
+          <Typography
+            className={classes.accountName}
+            variant="headline"
+            gutterBottom
+            color={"primary"}>
+            {account.name}
+          </Typography>
+
           <Hidden xsDown>
             <div className={classes.quotaContainer}>
-              {!refreshingQuota ? <Typography variant="subtitle1" color={'textPrimary'}>
-                Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
-              </Typography> : <Typography variant="subtitle1" color={'textPrimary'}>
-                Refreshing...
-              </Typography>
-              }
-
-              {!refreshingQuota &&
-              <IconButton color={'secondary'}
-                          onClick={this.refreshQuota}
-              >
-                <RefreshIcon/>
-              </IconButton>
+              {!refreshingQuota ?
+                <Typography variant="subtitle2" color={'textSecondary'} className={classes.textGutter}>
+                  Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
+                </Typography> :
+                <Typography variant="subtitle2" color={'textSecondary'} className={classes.textGutter}>
+                  Refreshing...
+                </Typography>
               }
             </div>
             <div className={classes.spacer}/>
@@ -141,31 +149,24 @@ class DriveAccountDetailsPage extends React.Component {
                             variant={'determinate'}
                             value={parseFloat(account.usage * 100 / account.limit)}
             />
-            <div className={classes.spacing}/>
+            <div className={classes.spacer}/>
             <DriveFileTable files={files}
                             onRowClick={this.handleFileClick}
                             onDownloadClick={this.handleDownloadClick}
             />
           </Hidden>
-
           <Hidden smUp>
             {account && (
               <div>
-                <Hidden smUp>
-                  <Typography
-                    className={classes.accountName}
-                    variant="title"
-                    color={"primary"}>
-                    {account.name}
-                  </Typography>
-                </Hidden>
                 {!refreshingQuota ?
                   <Typography variant="subtitle2"
-                              color={'textSecondary'}>
+                              color={'textSecondary'}
+                              className={classes.textGutter}>
                     Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
                   </Typography> :
                   <Typography variant="subtitle2"
-                              color={'textSecondary'}>
+                              color={'textSecondary'}
+                              className={classes.textGutter}>
                     Refreshing...
                   </Typography>
                 }

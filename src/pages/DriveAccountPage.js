@@ -10,6 +10,7 @@ import AccountList from '../components/account/AccountList'
 import queryString from 'query-string'
 import Button from '@material-ui/core/Button/Button';
 import Typography from '@material-ui/core/Typography/Typography';
+import Select from '@material-ui/core/Select/Select';
 
 const styles = theme => ({
   root: {
@@ -18,6 +19,8 @@ const styles = theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing.unit,
     },
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
   },
   divider: {
     ...theme.mixins.gutters(),
@@ -31,7 +34,17 @@ const styles = theme => ({
     ...theme.mixins.gutters(),
   },
   pagingContainer: {
-    margin: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 2,
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing.unit,
+    },
+  },
+  pageSize: {
+    float: "right",
+  },
+  pageSizeLabel: {
+    display: "inline-block",
+    marginRight: theme.spacing.unit * 2,
   }
 });
 
@@ -104,15 +117,26 @@ class DriveAccountPage extends React.Component {
     navigationService.goToAccountsPage(this.state.page + 1, this.state.rowsPerPage);
   };
 
+  handleChangeRowPerPage = (event) => {
+    navigationService.goToAccountsPage(this.state.page, event.target.value);
+  };
+
   render = () => {
     const {classes} = this.props;
     const {accounts, rowsPerPage, page, hasMore, loading} = this.state;
 
     return (
-      <Paper className={classes.root} elevation={1} square={true}>
+      <Paper className={classes.root}
+             elevation={1} >
         {accounts && accounts.length > 0 &&
         (
           <div>
+            <Typography
+              className={classes.accountName}
+              variant="headline"
+              color={"primary"}>
+              Accounts
+            </Typography>
             <Hidden xsDown>
               <AccountTable accounts={accounts}
                             onRowClick={this.handleRowClick}
@@ -121,12 +145,6 @@ class DriveAccountPage extends React.Component {
               />
             </Hidden>
             <Hidden smUp>
-              <Typography
-                className={classes.accountName}
-                variant="title"
-                color={"primary"}>
-                Accounts
-              </Typography>
               <AccountList accounts={accounts}
                            onItemClick={this.handleRowClick}/>
             </Hidden>
@@ -134,7 +152,6 @@ class DriveAccountPage extends React.Component {
 
         )
         }
-        <div className={classes.divider}/>
         <div className={classes.pagingContainer}>
           <Button color={'secondary'}
                   onClick={this.handlePreviousClick}
@@ -144,11 +161,27 @@ class DriveAccountPage extends React.Component {
           <Button color={'secondary'}
                   onClick={this.handleNextClick}
                   disabled={loading || !hasMore}>
-            Next</Button>
+            Next
+          </Button>
+          <div className={classes.pageSize}>
+            <Typography className={classes.pageSizeLabel}>Page Size: </Typography>
+            <Select
+              native
+              value={rowsPerPage}
+              onChange={this.handleChangeRowPerPage}
+              inputProps={{
+                name: 'age',
+                id: 'age-native-simple',
+              }}
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </Select>
+          </div>
         </div>
-
         {loading && <LinearProgress/>}
-
       </Paper>
     )
   }

@@ -4,7 +4,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import {fade} from '@material-ui/core/styles/colorManipulator';
 import {withStyles} from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -22,8 +21,17 @@ import Menu from "@material-ui/core/Menu/Menu";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 //import  from "@material-ui/icons";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import Hidden from "@material-ui/core/Hidden/Hidden";
 import QuickSearchField from './components/search/QuickSearchField';
+import Hidden from '@material-ui/core/Hidden/Hidden';
+import Drawer from '@material-ui/core/Drawer/Drawer';
+import List from '@material-ui/core/List/List';
+import ListItem from '@material-ui/core/ListItem/ListItem';
+import ListItemText from '@material-ui/core/ListItemText/ListItemText';
+import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
+import navigationService from './services/NavigationService';
+
+const drawerWidth = 240;
+
 
 const styles = theme => ({
   root: {
@@ -78,7 +86,12 @@ const styles = theme => ({
       display: 'none',
     },
   },
-
+  toolbar: {
+    height: 48,
+    [theme.breakpoints.down('xs')]: {
+      height: 56,
+    }
+  },
   toolbarDense: {
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
@@ -92,7 +105,21 @@ const styles = theme => ({
       display: 'flex',
     },
   },
-
+  appBar: {
+    // marginLeft: drawerWidth,
+    // [theme.breakpoints.up('sm')]: {
+    //   width: `calc(100% - ${drawerWidth}px)`,
+    // },
+  },
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
   content: {
     flexGrow: 1,
   },
@@ -103,6 +130,7 @@ class App extends React.Component {
   state = {
     downloadingCount: 0,
     open: false,
+    mobileOpen: false,
     openSearch: false,
     anchorEl: null,
     mobileMoreAnchorEl: null,
@@ -165,8 +193,12 @@ class App extends React.Component {
     this.setState({showQuickSearch: false})
   };
 
+  handleDrawerToggle = () => {
+    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+  };
+
   render = () => {
-    const {classes} = this.props;
+    const {classes, theme} = this.props;
     const {downloadingCount, openSearch, anchorEl, mobileMoreAnchorEl, showQuickSearch} = this.state;
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -195,11 +227,15 @@ class App extends React.Component {
 
     const toolbarContent = (
       <React.Fragment>
-        <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
+        <IconButton className={classes.menuButton}
+                    color="inherit"
+                    aria-label="Open drawer"
+                    onClick={this.handleDrawerToggle}
+        >
           <MenuIcon/>
         </IconButton>
         <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-          {document.title}
+          Drive Manager
         </Typography>
         <div className={classes.search}>
           <div className={classes.searchIcon}>
@@ -223,18 +259,52 @@ class App extends React.Component {
         <Toolbar className={classes.toolbarNormal}>
           {toolbarContent}
         </Toolbar>
-        <Toolbar variant={"dense"} className={classes.toolbarDense}>
+        <Toolbar variant={"dense"}
+                 className={classes.toolbarDense}>
           {toolbarContent}
         </Toolbar>
       </React.Fragment>
     );
+    const drawer = (
+      <div>
+        <CssBaseline />
+        <List>
+            <ListItem button onClick={() => {
+              this.setState({
+                mobileOpen: false,
+              }, function () {
+                navigationService.goToAccounts();
+              })
+            }}>
+              <ListItemText primary={'Accounts'} />
+            </ListItem>
+        </List>
+      </div>
+    );
 
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed" className={classes.appBar}>
           {renderToolbar}
         </AppBar>
+        <nav className={classes.drawer}>
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Hidden smUp implementation="css">
+            <Drawer
+              container={this.props.container}
+              variant="temporary"
+              open={this.state.mobileOpen}
+              onClose={this.handleDrawerToggle}
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+        </nav>
         <main className={classes.content}>
+          <div className={classes.toolbar} />
           {!showQuickSearch && <AppRoutes/>}
         </main>
         <Dialog
