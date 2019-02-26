@@ -49,6 +49,7 @@ const styles = theme => ({
 class QuickSearchField extends React.Component {
   state = {
     anchorEl: null,
+    open: false,
   };
 
   constructor(props) {
@@ -148,7 +149,8 @@ class QuickSearchField extends React.Component {
             input: classes.inputInput,
           }}
         />
-        <Popper id={id} open={open}
+        <Popper id={id}
+                open={open}
                 anchorEl={anchorEl}
                 transition
                 className={classes.popper}>

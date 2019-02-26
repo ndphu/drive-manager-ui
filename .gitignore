@@ -22,3 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.iml
+build/asset-manifest.json build/favicon.ico build/index.html build/manifest.json build/precache-manifest.c5b65df4a560aa0c0a9daa074e643e31.js build/service-worker.js build/static
+deploy/build/asset-manifest.json deploy/build/favicon.ico deploy/build/index.html deploy/build/manifest.json deploy/build/precache-manifest.c5b65df4a560aa0c0a9daa074e643e31.js deploy/build/service-worker.js deploy/build/static
+deploy/build
+.idea

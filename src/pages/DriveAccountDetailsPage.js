@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import DriveFileTable from '../components/account/DriveFileTable';
 import {humanFileSize} from "../utils/StringUtils";
-import downloadService from '../services/DownloadService';
 import '../../node_modules/video-react/dist/video-react.css';
 import Slide from '@material-ui/core/Slide/Slide';
 import Hidden from '@material-ui/core/Hidden/Hidden';
@@ -86,7 +85,7 @@ class DriveAccountDetailsPage extends React.Component {
   handleDownloadClick = (file) => {
     accountService.getDownloadLink(this.state.account._id, file.id).then(resp => {
       const link = resp.link;
-      downloadService.downloadDriveFile(file.name, link);
+      console.log(link)
     });
   };
 

@@ -29,6 +29,26 @@ class NavigationService {
   goToAccounts = () => {
     this.history.push('/accounts');
   };
+
+  goToLoginPage = () => {
+    this.history.push(`/user/login`);
+  };
+
+  goToRegister = () => {
+    this.history.push(`/user/register`);
+  };
+
+  goToUserInfoPage = () => {
+    this.history.push(`/user/info`);
+  };
+
+  goToProjects = () => {
+    this.history.push(`/projects`);
+  };
+
+  goToProject = (id) => {
+    this.history.push(`/project/${id}`);
+  };
 }
 
 const navigationService = new NavigationService();

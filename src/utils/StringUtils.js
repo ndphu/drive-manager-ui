@@ -865,3 +865,8 @@ export const copyTextToClipBoard = (text) => {
   document.execCommand('copy');
   document.body.removeChild(el);
 };
+
+export const isValidEmail = (email) => {
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/img;
+  return emailRegex.test(email);
+};

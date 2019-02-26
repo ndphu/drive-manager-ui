@@ -4,8 +4,12 @@ import DriveAccountPage from './pages/DriveAccountPage';
 import HashRouter from 'react-router-dom/es/HashRouter';
 import navigationService from './services/NavigationService'
 import DriveAccountDetailsPage from './pages/DriveAccountDetailsPage';
-import DownloadPage from './pages/DownloadPage';
 import VideoViewPage from './pages/VideoViewPage';
+import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
+import UserInfoPage from './pages/UserInfoPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectPage from './pages/ProjectPage';
 
 class AppRoutes extends React.Component {
 
@@ -19,8 +23,12 @@ class AppRoutes extends React.Component {
             <Switch>
               <Route path={'/accounts'} component={DriveAccountPage}/>
               <Route path={'/account/:id'} component={DriveAccountDetailsPage}/>
-              <Route path={'/downloads'} component={DownloadPage}/>
               <Route path={'/view/video'} component={VideoViewPage}/>
+              <Route path={'/projects'} component={ProjectsPage}/>
+              <Route path={'/project/:id'} component={ProjectPage}/>
+              <Route path={'/user/register'} component={RegisterPage}/>
+              <Route path={'/user/login'} component={LoginPage}/>
+              <Route path={'/user/info'} component={UserInfoPage}/>
               <Redirect exact={true} from={'/'} to={'/accounts'}/>
             </Switch>
           )

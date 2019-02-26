@@ -10,17 +10,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import withRoot from './withRoot';
 import AppRoutes from './AppRoutes';
-import downloadService from './services/DownloadService';
-import Dialog from '@material-ui/core/Dialog/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
-import DownloadPage from './pages/DownloadPage';
 import Menu from "@material-ui/core/Menu/Menu";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 //import  from "@material-ui/icons";
 import MoreIcon from "@material-ui/icons/MoreVert";
+import LoginIcon from "@material-ui/icons/AccountCircle";
 import QuickSearchField from './components/search/QuickSearchField';
 import Hidden from '@material-ui/core/Hidden/Hidden';
 import Drawer from '@material-ui/core/Drawer/Drawer';
@@ -29,6 +24,7 @@ import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
 import navigationService from './services/NavigationService';
+import authService from './services/AuthService';
 
 const drawerWidth = 240;
 
@@ -137,23 +133,12 @@ class App extends React.Component {
   };
 
   componentDidMount = () => {
-    this.interval = setInterval(this.refreshDownload, 200);
   };
 
   componentWillUnmount = () => {
     if (this.interval) {
       clearInterval(this.interval)
     }
-  };
-
-  refreshDownload = () => {
-    //
-    let downloads = downloadService.getDownloadIds().map(id => {
-      return downloadService.getDownload(id);
-    }).filter(d => !d.completed);
-    this.setState({
-      downloadingCount: downloads.length
-    })
   };
 
   handleClickOpen = () => {
@@ -194,14 +179,20 @@ class App extends React.Component {
   };
 
   handleDrawerToggle = () => {
-    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+    this.setState(state => ({mobileOpen: !state.mobileOpen}));
   };
+
+  handleLoginClick = () => {
+    navigationService.goToLoginPage();
+  };
+
 
   render = () => {
     const {classes, theme} = this.props;
-    const {downloadingCount, openSearch, anchorEl, mobileMoreAnchorEl, showQuickSearch} = this.state;
+    const {openSearch, anchorEl, mobileMoreAnchorEl, showQuickSearch} = this.state;
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const authenticated = authService.authenticated;
     const renderMenu = (
       <Menu
         anchorEl={anchorEl}
@@ -245,6 +236,20 @@ class App extends React.Component {
         </div>
         <div className={classes.grow}/>
         <div className={classes.sectionDesktop}>
+          {
+            authenticated ? (
+              <IconButton aria-haspopup="true"
+                          color="inherit">
+                <LoginIcon/>
+              </IconButton>
+            ) : (
+              <Button color="inherit"
+                      onClick={this.handleLoginClick}
+              >
+                Login
+              </Button>
+            )
+          }
         </div>
         <div className={classes.sectionMobile}>
           <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
@@ -265,25 +270,42 @@ class App extends React.Component {
         </Toolbar>
       </React.Fragment>
     );
+    const navItems = [
+      {
+        label: "Projects",
+        action: () => {
+          navigationService.goToProjects();
+        }
+      },
+      {
+        label: "Accounts",
+        action: () => {
+          navigationService.goToAccounts();
+        }
+      },
+      {
+        label: "Settings",
+        action: () => {
+          navigationService.goToUserInfoPage();
+        }
+      }
+    ];
     const drawer = (
-      <div>
-        <CssBaseline />
-        <List>
-            <ListItem button onClick={() => {
-              this.setState({
-                mobileOpen: false,
-              }, function () {
-                navigationService.goToAccounts();
-              })
-            }}>
-              <ListItemText primary={'Accounts'} />
-            </ListItem>
-        </List>
-      </div>
+      <List>
+        {navItems.map(navItem =>
+          <ListItem button
+                    onClick={() => {
+                      this.setState({mobileOpen: false}, navItem.action);
+                    }}>
+            <ListItemText primary={navItem.label}/>
+          </ListItem>)
+        }
+      </List>
     );
 
     return (
       <div className={classes.root}>
+        <CssBaseline/>
         <AppBar position="fixed" className={classes.appBar}>
           {renderToolbar}
         </AppBar>
@@ -304,25 +326,9 @@ class App extends React.Component {
           </Hidden>
         </nav>
         <main className={classes.content}>
-          <div className={classes.toolbar} />
+          <div className={classes.toolbar}/>
           {!showQuickSearch && <AppRoutes/>}
         </main>
-        <Dialog
-          fullScreen={true}
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">Download</DialogTitle>
-          <DialogContent>
-            <DownloadPage/>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     );
   }
