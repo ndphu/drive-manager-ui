@@ -35,6 +35,12 @@ class AccountService {
   getSharableLink = (accountId, fileId) => {
     return api.get(`/manage/driveAccount/${accountId}/file/${fileId}/sharableLink`);
   };
+
+  uploadFile = (id, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.postForm(`/manage/driveAccount/${id}/upload`, formData);
+  };
 }
 
 

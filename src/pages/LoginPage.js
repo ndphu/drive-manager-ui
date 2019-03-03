@@ -9,12 +9,16 @@ import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import Typography from '@material-ui/core/Typography/Typography';
 import {isValidEmail} from '../utils/StringUtils';
 import Hidden from '@material-ui/core/Hidden/Hidden';
+import Paper from '@material-ui/core/Paper/Paper';
 
 const styles = theme => ({
   loginForm: {
     padding: theme.spacing.unit * 2,
   },
-  formButton: {
+  formContainer: {
+    padding: theme.spacing.unit * 2,
+  },
+  buttonContainer: {
     marginTop: theme.spacing.unit,
   },
   progressBar: {
@@ -60,7 +64,10 @@ class LoginPage extends React.Component {
     const {classes} = this.props;
     const {loading, loginError} = this.state;
     const loginForm = (
-      <React.Fragment>
+      <Paper className={classes.formContainer}>
+        <Typography variant={'title'} gutterBottom>
+          Login
+        </Typography>
         <TextField
           label="Email"
           className={classes.textField}
@@ -82,21 +89,29 @@ class LoginPage extends React.Component {
           type="password"
           fullWidth
         />
-        <Button variant={'contained'}
-                color={'primary'}
-                onClick={this.login}
-                fullWidth
-                className={classes.formButton}
-                disabled={this.invalidInput()}>
-          Login
-        </Button>
-        <Button variant={'outlined'}
-                color={'primary'}
-                fullWidth
-                className={classes.formButton}
-                onClick={this.register}>
-          Register
-        </Button>
+        <Grid container spacing={8} className={classes.buttonContainer}>
+          <Grid item xs={6}>
+            <Button variant={'contained'}
+                    color={'primary'}
+                    onClick={this.login}
+                    className={classes.formButton}
+                    fullWidth
+                    disabled={this.invalidInput()}>
+              Login
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button variant={'outlined'}
+                    color={'primary'}
+                    fullWidth
+                    className={classes.formButton}
+                    onClick={this.register}>
+              Register
+            </Button>
+          </Grid>
+        </Grid>
+
+
         {loading &&
         <LinearProgress variant={'indeterminate'}
                         className={classes.progressBar}/>
@@ -108,11 +123,11 @@ class LoginPage extends React.Component {
           {loginError.message}
         </Typography>
         }
-      </React.Fragment>
+      </Paper>
     );
     return (
       <div>
-        <Hidden xsDown >
+        <Hidden smDown>
           <Grid container className={classes.loginForm}>
             <Grid item xs={3}/>
             <Grid item xs={6}>
@@ -121,9 +136,18 @@ class LoginPage extends React.Component {
             <Grid item xs={3}/>
           </Grid>
         </Hidden>
-        <Hidden smUp  >
+        <Hidden xsDown mdUp>
           <Grid container className={classes.loginForm}>
+            <Grid item xs={2}/>
+            <Grid item xs={8}>
               {loginForm}
+            </Grid>
+            <Grid item xs={2}/>
+          </Grid>
+        </Hidden>
+        <Hidden smUp>
+          <Grid container className={classes.loginForm}>
+            {loginForm}
           </Grid>
         </Hidden>
       </div>

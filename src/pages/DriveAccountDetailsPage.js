@@ -12,6 +12,14 @@ import Hidden from '@material-ui/core/Hidden/Hidden';
 import DriveFileList from '../components/account/DriveFileList';
 import Divider from '@material-ui/core/Divider/Divider';
 import navigationService from '../services/NavigationService';
+import Button from '@material-ui/core/Button/Button';
+import Dialog from '@material-ui/core/Dialog/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import List from '@material-ui/core/List/List';
+import ListItem from '@material-ui/core/ListItem/ListItem';
+import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 
 const styles = theme => ({
   root: {
@@ -117,11 +125,82 @@ class DriveAccountDetailsPage extends React.Component {
     this.setState({playDialogOpen: false});
   };
 
+  onFileSelected = event => {
+    const selectedFiles = [...event.target.files];
+    selectedFiles.forEach(f => {
+      f.state = 'Pending';
+    });
+    this.setState({
+      selectedFiles: selectedFiles,
+      openUploadDialog: event.target.files && event.target.files.length > 0,
+    });
+  };
+
+  handleUploadClick = () => {
+    const account = this.state.account;
+    const selectedFiles = this.state.selectedFiles;
+    let uploadedCount = 0;
+    const _this = this;
+    this.setState({uploading: true}, function () {
+      selectedFiles.forEach(f => {
+        f.state = 'Uploading';
+        accountService.uploadFile(account.id, f).then(resp => {
+          uploadedCount++;
+          f.state = 'Completed';
+          let isDone = uploadedCount < selectedFiles.length;
+          this.setState({openUploadDialog: isDone, uploading: !isDone}, function () {
+            if (isDone) {
+              _this.load();
+            }
+          });
+        });
+      });
+      this.setState({});
+    });
+  };
+
+  handleUploadDialogClose = () => {
+    this.setState({openUploadDialog: false});
+  };
+
   render = () => {
     const {classes} = this.props;
-    const {account, files, refreshingQuota} = this.state;
+    const {account, files, refreshingQuota, selectedFiles, openUploadDialog, uploading} = this.state;
+    console.log(selectedFiles);
+    const dialog =
+      <Dialog open={openUploadDialog}
+              fullWidth
+      >
+        <DialogTitle>
+          Upload Files
+        </DialogTitle>
+        <DialogContent>
+          <List>
+            {selectedFiles && selectedFiles.map(f =>
+              <ListItem key={f.name}
+                        divider
+              >
+                <ListItemText
+                  primary={f.name}
+                  secondary={`${humanFileSize(f.size)} - ${f.state}`}
+                />
+              </ListItem>)}
+          </List>
+          {uploading && <LinearProgress color={'secondary'} variant={'indeterminate'}/>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleUploadClick}
+                  color={'primary'}
+                  disabled={uploading}
+          >
+            Upload
+          </Button>
+        </DialogActions>
+      </Dialog>;
+
     return (
       <Paper className={classes.root} elevation={1}>
+        {dialog}
         {account &&
         <div>
           <Typography
@@ -179,6 +258,18 @@ class DriveAccountDetailsPage extends React.Component {
           </Hidden>
         </div>
         }
+        <Button
+          component={'label'}
+          color={'primary'}
+          variant={'outlined'}
+          style={{marginTop: 8}}
+        >
+          Upload
+          <input type='file'
+                 style={{display: 'none'}}
+                 onChange={this.onFileSelected}
+                 multiple/>
+        </Button>
       </Paper>
     );
   }

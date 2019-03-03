@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography/Typography';
 import AccountList from '../components/account/AccountList';
 import navigationService from '../services/NavigationService';
 import Button from '@material-ui/core/Button/Button';
+import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 
 const styles = theme => ({
   root: {
@@ -28,10 +29,12 @@ class ProjectPage extends React.Component {
   };
 
   loadProject = () => {
-    projectService.getProjectById(this.props.match.params.id).then(project => {
-      this.setState({
-        loading: false,
-        project: project,
+    this.setState({loading: true}, function () {
+      projectService.getProjectById(this.props.match.params.id).then(project => {
+        this.setState({
+          loading: false,
+          project: project,
+        });
       });
     });
   };
@@ -53,7 +56,7 @@ class ProjectPage extends React.Component {
 
   render = () => {
     const {classes} = this.props;
-    const {project} = this.state;
+    const {project, loading} = this.state;
     return (
       project ?
         <Paper className={classes.root}>
@@ -77,7 +80,9 @@ class ProjectPage extends React.Component {
           </Button>
         </Paper>
         :
-        <div/>
+        <React.Fragment>
+          {loading && <LinearProgress variant={'indeterminate'} color={'secondary'}/>}
+        </React.Fragment>
     );
   }
 }

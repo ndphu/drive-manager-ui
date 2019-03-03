@@ -9,7 +9,10 @@ class ProjectService {
   };
 
   createProject = (project) => {
-    return api.post("/project", project)
+    const formData = new FormData();
+    formData.append("displayName", project.displayName);
+    formData.append("file", project.keyFile);
+    return api.postForm("/project", formData);
   };
 
   getProjectById = (id) => {

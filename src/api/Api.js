@@ -62,6 +62,31 @@ class Api {
   setToken = (token) => {
     this.token = token;
     localStorage.setItem("jwt.token",  token);
+  };
+
+  postForm(path, formData) {
+    const input = config.baseUrl + path;
+    const headers = {};
+    headers['Authorization'] = `Bearer ${this.token}`;
+    return new Promise((resolve, reject) => {
+      fetch(input, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+      }).then(resp => {
+        if (resp.status >= 200 && resp.status <= 299) {
+          resp.json().then(data => {
+            resolve(data);
+          })
+        } else {
+          resp.json().then(data => {
+            reject(data);
+          });
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
   }
 }
 

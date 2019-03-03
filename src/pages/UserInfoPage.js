@@ -15,7 +15,7 @@ import CardActions from '@material-ui/core/CardActions/CardActions';
 
 const styles = theme => ({
   root: {
-    margin: theme.spacing.unit * 3,
+    margin: theme.spacing.unit * 2,
   },
   button: {
     marginTop: theme.spacing.unit,
@@ -145,7 +145,7 @@ class UserInfoPage extends React.Component {
         <CardContent>
           {serviceToken ?
             <div className={classes.commandContainer}>
-              <Typography variant={'caption'} >
+              <Typography variant={'caption'}>
                 {this.getCLICommand()}
               </Typography>
             </div>
@@ -207,17 +207,14 @@ class UserInfoPage extends React.Component {
       </Card>;
 
     return (
-      <div className={classes.root}>
-        {userInfo ?
-          <div>
-            {userInfoCard}
-            <div className={classes.paddingContainer}/>
-            {cliSetupSection}
-            <div className={classes.paddingContainer}/>
-          </div>
-          : <LinearProgress variant={'indeterminate'}/>
-        }
-      </div>
+      userInfo ?
+        <div className={classes.root}>
+          {userInfoCard}
+          <div className={classes.paddingContainer}/>
+          {cliSetupSection}
+          <div className={classes.paddingContainer}/>
+        </div>
+        : <LinearProgress variant={'indeterminate'} color={'secondary'}/>
     );
   }
 }

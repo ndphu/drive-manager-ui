@@ -1,6 +1,6 @@
 ---
 applications:
-- name: drive-manager-ui
+- name: drive-manager-ui-beta
   memory: 16M
   instances: 1
   command: drive-manager-ui

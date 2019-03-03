@@ -15,7 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import navigationService from '../services/NavigationService';
 import ListItemIcon from '@material-ui/core/ListItemIcon/ListItemIcon';
 import CloudIcon from '@material-ui/icons/CloudOutlined';
-import Avatar from '@material-ui/core/Avatar/Avatar';
+import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 
 
 const styles = theme => ({
@@ -39,9 +39,11 @@ class ProjectsPage extends React.Component {
   };
 
   loadProjects = () => {
-    projectService.getProjects(1, 25).then(resp => {
-      this.setState({projects: resp})
-    })
+    this.setState({loading: true}, function () {
+      projectService.getProjects(1, 25).then(resp => {
+        this.setState({projects: resp, loading: false})
+      })
+    });
   };
 
   handleAddProjectClick = () => {
@@ -59,7 +61,7 @@ class ProjectsPage extends React.Component {
   };
 
   handleSaveNewProject = () => {
-    projectService.createProject({displayName: this.state.displayName, key: btoa(this.state.key)})
+    projectService.createProject({displayName: this.state.displayName, keyFile: this.state.selectedFile})
       .then(resp => {
         this.setState({openAddProjectDialog: false}, this.loadProjects);
       })
@@ -69,9 +71,17 @@ class ProjectsPage extends React.Component {
     navigationService.goToProject(p.id);
   };
 
+  onFileSelected = event => {
+    this.setState({
+      selectedFile: event.target.files[0],
+      loaded: 0,
+    });
+
+  };
+
   render = () => {
     const {classes} = this.props;
-    const {projects, openAddProjectDialog} = this.state;
+    const {projects, openAddProjectDialog, loading, selectedFile} = this.state;
 
     const dialog =
       <Dialog
@@ -92,12 +102,22 @@ class ProjectsPage extends React.Component {
           />
           <TextField
             margin="dense"
-            label="Service Account Key"
+            label="Admin Key"
             multiline
             fullWidth
-            value={this.state.key}
-            onChange={this.handleChange('key')}
+            value={selectedFile ? selectedFile.name : ""}
+            disabled
           />
+          <Button
+            style={{marginTop: 4}}
+            color={'secondary'}
+            component={'label'}>
+            Select Key File
+            <input type='file'
+                   accept="application/json"
+                   style={{display: 'none'}}
+                   onChange={this.onFileSelected}/>
+          </Button>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleClose}>
@@ -111,36 +131,41 @@ class ProjectsPage extends React.Component {
       </Dialog>;
 
     return (
-      <Paper className={classes.root}>
-        <Typography variant={'h5'}
-                    color={'textPrimary'}>
-          Projects
-        </Typography>
-        <List>
-          {projects && projects.map(project =>
-            <ListItem key={`project-list-item-key-${project.id}`}
-                      divider
-                      button
-                      onClick={() => {
-                        this.handleProjectClick(project);
-                      }}>
-              <ListItemIcon>
-                <CloudIcon color={'primary'}/>
-              </ListItemIcon>
-              <ListItemText primary={project.displayName}
-                            secondary={project.projectId}
-              />
-            </ListItem>
-          )}
-        </List>
-        <Button variant={'outlined'}
-                color={'primary'}
-                onClick={this.handleAddProjectClick}
-        >
-          Add Project
-        </Button>
-        {dialog}
-      </Paper>
+      loading ?
+        <React.Fragment>
+          {loading && <LinearProgress variant={'indeterminate'} color={'secondary'}/>}
+        </React.Fragment>
+        :
+        <Paper className={classes.root}>
+          <Typography variant={'h5'}
+                      color={'textPrimary'}>
+            Projects
+          </Typography>
+          <List>
+            {projects && projects.map(project =>
+              <ListItem key={`project-list-item-key-${project.id}`}
+                        divider
+                        button
+                        onClick={() => {
+                          this.handleProjectClick(project);
+                        }}>
+                <ListItemIcon>
+                  <CloudIcon color={'primary'}/>
+                </ListItemIcon>
+                <ListItemText primary={project.displayName}
+                              secondary={project.projectId}
+                />
+              </ListItem>
+            )}
+          </List>
+          <Button variant={'outlined'}
+                  color={'primary'}
+                  onClick={this.handleAddProjectClick}
+          >
+            Add Project
+          </Button>
+          {dialog}
+        </Paper>
     );
   }
 }
