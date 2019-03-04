@@ -65,12 +65,11 @@ class LoginPage extends React.Component {
     const {loading, loginError} = this.state;
     const loginForm = (
       <Paper className={classes.formContainer}>
-        <Typography variant={'title'} gutterBottom>
+        <Typography variant={'h4'} gutterBottom>
           Login
         </Typography>
         <TextField
           label="Email"
-          className={classes.textField}
           value={this.state.email}
           onChange={this.handleChange('email')}
           margin="dense"
@@ -81,7 +80,6 @@ class LoginPage extends React.Component {
         />
         <TextField
           label="Password"
-          className={classes.textField}
           value={this.state.password}
           onChange={this.handleChange('password')}
           margin="dense"
@@ -130,7 +128,7 @@ class LoginPage extends React.Component {
         <Hidden smDown>
           <Grid container className={classes.loginForm}>
             <Grid item xs={3}/>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               {loginForm}
             </Grid>
             <Grid item xs={3}/>
@@ -155,6 +153,6 @@ class LoginPage extends React.Component {
   }
 }
 
-LoginPage.PropTypes = {};
+LoginPage.propTypes = {};
 
 export default withStyles(styles)(LoginPage);

@@ -294,6 +294,7 @@ class App extends React.Component {
       <List>
         {navItems.map(navItem =>
           <ListItem button
+                    key={navItem.label}
                     onClick={() => {
                       this.setState({mobileOpen: false}, navItem.action);
                     }}>

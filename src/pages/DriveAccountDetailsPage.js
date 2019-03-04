@@ -147,8 +147,8 @@ class DriveAccountDetailsPage extends React.Component {
         accountService.uploadFile(account.id, f).then(resp => {
           uploadedCount++;
           f.state = 'Completed';
-          let isDone = uploadedCount < selectedFiles.length;
-          this.setState({openUploadDialog: isDone, uploading: !isDone}, function () {
+          const isDone = uploadedCount === selectedFiles.length;
+          this.setState({openUploadDialog: !isDone, uploading: !isDone}, function () {
             if (isDone) {
               _this.load();
             }

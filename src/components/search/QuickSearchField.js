@@ -132,7 +132,7 @@ class QuickSearchField extends React.Component {
   render() {
     const {classes} = this.props;
     const {anchorEl, files, loading, noResults, accounts, query} = this.state;
-    const open = anchorEl && !loading;
+    const open = !!(anchorEl && !loading);
     const id = open ? 'simple-popper' : null;
 
     return (

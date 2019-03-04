@@ -32,7 +32,7 @@ class Api {
   };
 
   post = (path, body, raw) => {
-    const input = config.baseUrl + path;
+    let input = path.startsWith("http") ? path : config.baseUrl + path;
     return new Promise((resolve, reject) => {
       fetch(input, {
         method: 'POST',

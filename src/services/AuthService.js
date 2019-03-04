@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth'
 import api from '../api/Api';
+import config from '../api/Config';
 
 
 class AuthService {
@@ -38,11 +39,11 @@ class AuthService {
   };
 
   getJWTToken = (idToken) => {
-    return api.post(`/user/login/firebase`, {token: idToken})
+    return api.post(`${config.loginBaseUrl}/user/login/firebase`, {token: idToken})
   };
 
   registerUserWithEmail = (email, password, displayName) => {
-    return api.post(`/user/register`, {
+    return api.post(`${config.loginBaseUrl}/user/register`, {
       email: email,
       password: password,
       displayName: displayName,
