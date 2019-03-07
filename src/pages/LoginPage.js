@@ -12,7 +12,7 @@ import Hidden from '@material-ui/core/Hidden/Hidden';
 import Paper from '@material-ui/core/Paper/Paper';
 
 const styles = theme => ({
-  loginForm: {
+  registerForm: {
     padding: theme.spacing.unit * 2,
   },
   formContainer: {
@@ -126,7 +126,7 @@ class LoginPage extends React.Component {
     return (
       <div>
         <Hidden smDown>
-          <Grid container className={classes.loginForm}>
+          <Grid container className={classes.registerForm}>
             <Grid item xs={3}/>
             <Grid item xs={4}>
               {loginForm}
@@ -135,7 +135,7 @@ class LoginPage extends React.Component {
           </Grid>
         </Hidden>
         <Hidden xsDown mdUp>
-          <Grid container className={classes.loginForm}>
+          <Grid container className={classes.registerForm}>
             <Grid item xs={2}/>
             <Grid item xs={8}>
               {loginForm}
@@ -144,7 +144,7 @@ class LoginPage extends React.Component {
           </Grid>
         </Hidden>
         <Hidden smUp>
-          <Grid container className={classes.loginForm}>
+          <Grid container className={classes.registerForm}>
             {loginForm}
           </Grid>
         </Hidden>
