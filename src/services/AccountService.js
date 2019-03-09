@@ -36,10 +36,25 @@ class AccountService {
     return api.get(`/manage/driveAccount/${accountId}/file/${fileId}/sharableLink`);
   };
 
-  uploadFile = (id, file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.postForm(`/manage/driveAccount/${id}/upload`, formData);
+  uploadFile = (accountId, file) => {
+    const metadata = {
+      name : file.name,
+    };
+    console.log("File", file);
+    console.log("File metadata", metadata);
+    return new Promise((resolve, reject) => {
+      api.get(`/manage/driveAccount/${accountId}/accessToken`).then(resp => {
+        const accessToken = resp.accessToken;
+        const formData = new FormData();
+        formData.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+        formData.append("file", file);
+        api.driveUpload(formData, accessToken).then(resp => {
+          resolve(resp)
+        }).catch((...err) => {
+          reject(...err)
+        })
+      })
+    });
   };
 }
 

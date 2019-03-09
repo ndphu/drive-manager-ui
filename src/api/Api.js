@@ -61,7 +61,7 @@ class Api {
 
   setToken = (token) => {
     this.token = token;
-    localStorage.setItem("jwt.token",  token);
+    localStorage.setItem("jwt.token", token);
   };
 
   postForm(path, formData) {
@@ -70,6 +70,32 @@ class Api {
     headers['Authorization'] = `Bearer ${this.token}`;
     return new Promise((resolve, reject) => {
       fetch(input, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+      }).then(resp => {
+        if (resp.status >= 200 && resp.status <= 299) {
+          resp.json().then(data => {
+            resolve(data);
+          })
+        } else {
+          resp.json().then(data => {
+            reject(data);
+          });
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  driveUpload = (formData, accessToken) => {
+    const url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id'
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`
+    };
+    return new Promise((resolve, reject) => {
+      fetch(url, {
         method: 'POST',
         headers: headers,
         body: formData,
