@@ -4,6 +4,7 @@ import './index.css'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import firebase from 'firebase/app';
+import { createWriteStream, supported, version } from 'streamsaver'
 
 const config = {
   apiKey: "AIzaSyD4hWFxJyDgXeV7jWa0Gjne2WycHyAhTsI",
