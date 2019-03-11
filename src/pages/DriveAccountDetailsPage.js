@@ -119,9 +119,9 @@ class DriveAccountDetailsPage extends React.Component {
       .then(account => {
         document.title = account.name;
         this.setState({account}, function () {
-          accountService.getAccountFiles(account._id, _this.state.page, _this.state.size)
+          accountService.getAccountFiles(account.id, _this.state.page, _this.state.size)
             .then(files => {
-              this.setState({files}, _this.refreshQuota)
+              this.setState({files})
             })
         });
       })
@@ -224,28 +224,9 @@ class DriveAccountDetailsPage extends React.Component {
         {dialog}
         {account &&
         <div>
-          <Typography
-            className={classes.accountName}
-            variant="headline"
-            gutterBottom
-            color={"primary"}>
-            {account.name}
-          </Typography>
-
           <Hidden xsDown>
-            <div className={classes.quotaContainer}>
-              {!refreshingQuota ?
-                <Typography variant="subtitle2" color={'textSecondary'} className={classes.textGutter}>
-                  Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
-                </Typography> :
-                <Typography variant="subtitle2" color={'textSecondary'} className={classes.textGutter}>
-                  Refreshing...
-                </Typography>
-              }
-            </div>
-            <div className={classes.spacer}/>
-            <div className={classes.spacer}/>
             <DriveFileTable files={files}
+                            accountName={account.name}
                             onRowClick={this.handleFileClick}
                             onDownloadClick={this.handleDownloadClick}
                             onUploadClick={() => {this.inputElement.click();}}
@@ -253,25 +234,6 @@ class DriveAccountDetailsPage extends React.Component {
             />
           </Hidden>
           <Hidden smUp>
-            {account && (
-              <div>
-                {!refreshingQuota ?
-                  <Typography variant="subtitle2"
-                              color={'textSecondary'}
-                              className={classes.textGutter}>
-                    Usage: {humanFileSize(account.usage)} / {humanFileSize(account.limit)}
-                  </Typography> :
-                  <Typography variant="subtitle2"
-                              color={'textSecondary'}
-                              className={classes.textGutter}>
-                    Refreshing...
-                  </Typography>
-                }
-                <div className={classes.spacer}/>
-                <Divider/>
-              </div>
-            )}
-
             <DriveFileList files={files}
                            onItemClick={this.handleFileClick}/>
           </Hidden>

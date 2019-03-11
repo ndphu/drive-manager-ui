@@ -16,6 +16,7 @@ import RefreshIcon from '@material-ui/icons/RefreshOutlined';
 import UploadIcon from '@material-ui/icons/CloudUploadOutlined';
 import Toolbar from '@material-ui/core/Toolbar/Toolbar';
 import Divider from '@material-ui/core/Divider/Divider';
+import Typography from '@material-ui/core/Typography/Typography';
 
 const styles = theme => ({
   tableRow: {
@@ -72,12 +73,18 @@ class DriveFileTable extends React.Component {
   };
 
   render = () => {
-    const {classes, files, onRowClick, onDownloadClick, onUploadClick, onRefreshClick} = this.props;
+    const {classes, files, onRowClick, onDownloadClick, onUploadClick, onRefreshClick, accountName} = this.props;
     const {selected} = this.state;
     return (
       <div>
         <div>
           <Toolbar variant={'dense'}>
+            <Typography
+              variant="title"
+              gutterBottom
+              color={"primary"}>
+              {accountName}
+            </Typography>
             <div className={classes.grow}/>
             {selected.length > 0 &&
             <React.Fragment>
