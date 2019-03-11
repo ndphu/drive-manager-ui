@@ -25,6 +25,7 @@ import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
 import navigationService from './services/NavigationService';
 import authService from './services/AuthService';
+import TableRow from '@material-ui/core/TableRow/TableRow';
 
 const drawerWidth = 240;
 
@@ -305,7 +306,11 @@ class App extends React.Component {
     );
 
     return (
-      <div className={classes.root}>
+      <div className={classes.root}
+           onContextMenu={(e) => {
+             e.preventDefault();
+           }}
+      >
         <CssBaseline/>
         <AppBar position="fixed" className={classes.appBar}>
           {renderToolbar}

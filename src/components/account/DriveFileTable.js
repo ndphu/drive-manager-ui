@@ -7,109 +7,146 @@ import TableBody from '@material-ui/core/TableBody/TableBody';
 import Table from '@material-ui/core/Table/Table';
 import {humanFileSize} from "../../utils/StringUtils";
 import Hidden from '@material-ui/core/Hidden/Hidden';
+import IconButton from '@material-ui/core/IconButton/IconButton';
+import DownloadIcon from '@material-ui/icons/SaveAltOutlined';
+import ViewIcon from '@material-ui/icons/VisibilityOutlined';
+import LinkIcon from '@material-ui/icons/LinkOutlined';
+import DeleteIcon from '@material-ui/icons/DeleteOutlined';
+import RefreshIcon from '@material-ui/icons/RefreshOutlined';
+import UploadIcon from '@material-ui/icons/CloudUploadOutlined';
+import Toolbar from '@material-ui/core/Toolbar/Toolbar';
+import Divider from '@material-ui/core/Divider/Divider';
 
 const styles = theme => ({
-    tableRow: {
-        cursor: "pointer",
-    },
-    tableRowSelected: {
-        backgroundColor: "#E8EAF6!important",
-    },
-    cell: {
-        fontSize: "14px!important",
-        fontWeight: "400",
-    },
-    cellSelected: {
-        fontSize: "14px!important",
-        color: "#303F9F",
-        fontWeight: "500",
-    },
-    tableRowHover: {
-        backgroundColor: "#9FA8DA!important",
-    }
+  tableRow: {
+    cursor: "pointer",
+  },
+  tableRowSelected: {
+    backgroundColor: "#E8EAF6!important",
+  },
+  cell: {
+    fontSize: "14px!important",
+    fontWeight: "500",
+    color: "rgba(0,0,0,.72)"
+  },
+  cellSelected: {
+    fontSize: "14px!important",
+    color: "#303F9F",
+    fontWeight: "500",
+  },
+  tableRowHover: {
+    backgroundColor: "#9FA8DA!important",
+  },
+  grow: {
+    flexGrow: 1,
+  },
+
 });
 
 class DriveFileTable extends React.Component {
-    state = {
-        selected: [],
-    };
+  state = {
+    selected: [],
+  };
 
-    toggleSelected = (fileId) => {
-        const {selected} = this.state;
-        const existing = selected.indexOf(fileId);
-        let newSelected = [];
-        if (this.state.multiSelect) {
-            newSelected = [...selected];
-        }
-        if (existing < 0) {
-            newSelected.push(fileId);
-        } else {
-            newSelected.splice(existing, 1)
-        }
-        this.setState({selected: newSelected});
-    };
-
-    render = () => {
-        const {classes, files, onRowClick, onDownloadClick} = this.props;
-
-        return (
-            <Table className={classes.table}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                        <Hidden lgDown>
-                            <TableCell>Key</TableCell>
-                        </Hidden>
-                        <TableCell>MIME</TableCell>
-                        <TableCell>Size</TableCell>
-                        <Hidden mdDown>
-                            <TableCell>Download</TableCell>
-                        </Hidden>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {files.map(file => {
-                        let selected = this.state.selected.indexOf(file.id) >= 0;
-                        return (
-                            <TableRow key={file.id}
-                                      selected={selected}
-                                      classes={{selected: classes.tableRowSelected}}
-                                      onClick={(e) => {
-                                          if (e.detail > 1) {
-                                              return;
-                                          }
-                                          this.toggleSelected(file.id);
-                                      }}
-                                      onDoubleClick={() => {
-                                          alert(file.name);
-                                      }}
-                                      onContextMenu={(e) => {
-                                          e.preventDefault();
-                                      }}
-                            >
-                                <TableCell component="th"
-                                           scope="row"
-                                           className={selected ? classes.cellSelected : classes.cell}
-                                >
-                                    {file.name}
-                                </TableCell>
-                                <Hidden lgDown>
-                                    <TableCell className={selected ? classes.cellSelected : classes.cell}>
-                                        {file.id}
-                                    </TableCell>
-                                </Hidden>
-                                <TableCell className={selected ? classes.cellSelected : classes.cell}>
-                                    {file.mimeType}
-                                </TableCell>
-                                <TableCell className={selected ? classes.cellSelected : classes.cell}>{humanFileSize(file.size)}
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
-        );
+  toggleSelected = (fileId) => {
+    const {selected} = this.state;
+    const existing = selected.indexOf(fileId);
+    let newSelected = [];
+    if (this.state.multiSelect) {
+      newSelected = [...selected];
     }
+    if (existing < 0) {
+      newSelected.push(fileId);
+    } else {
+      newSelected.splice(existing, 1)
+    }
+    this.setState({selected: newSelected});
+  };
+
+  handleDownload = () => {
+    if (this.props.onDownloadClick) {
+      this.props.onDownloadClick(
+        this.props.files.filter(file => this.state.selected.indexOf(file.id) >= 0)
+      );
+    }
+  };
+
+  render = () => {
+    const {classes, files, onRowClick, onDownloadClick, onUploadClick, onRefreshClick} = this.props;
+    const {selected} = this.state;
+    return (
+      <div>
+        <div>
+          <Toolbar variant={'dense'}>
+            <div className={classes.grow}/>
+            {selected.length > 0 &&
+            <React.Fragment>
+              <IconButton aria-label="Download" className={classes.margin}
+                          onClick={this.handleDownload}>
+                <DownloadIcon/>
+              </IconButton>
+              <IconButton aria-label="Preview" className={classes.margin}>
+                <ViewIcon/>
+              </IconButton>
+              <IconButton aria-label="Link" className={classes.margin}>
+                <LinkIcon/>
+              </IconButton>
+              <IconButton aria-label="Delete" className={classes.margin}>
+                <DeleteIcon/>
+              </IconButton>
+            </React.Fragment>
+            }
+            <IconButton aria-label="Refresh" className={classes.margin}
+                        onClick={onRefreshClick}>
+              <RefreshIcon color={'primary'}/>
+            </IconButton>
+            <IconButton aria-label="Upload" className={classes.margin}
+                        onClick={onUploadClick}>
+              <UploadIcon color={'primary'}/>
+            </IconButton>
+          </Toolbar>
+          <Divider/>
+        </div>
+        <Table>
+          <TableBody>
+            {files.map(file => {
+              let selected = this.state.selected.indexOf(file.id) >= 0;
+              return (
+                <TableRow key={file.id}
+                          selected={selected}
+                          classes={{selected: classes.tableRowSelected}}
+                          onClick={(e) => {
+                            if (e.detail > 1) {
+                              return;
+                            }
+                            this.toggleSelected(file.id);
+                          }}
+                          onDoubleClick={() => {
+                            alert(file.name);
+                          }}
+                >
+                  <TableCell component="th"
+                             scope="row"
+                             className={selected ? classes.cellSelected : classes.cell}
+                  >
+                    {file.name}
+                  </TableCell>
+                  <Hidden lgDown>
+                    <TableCell className={selected ? classes.cellSelected : classes.cell}>
+                      {file.id}
+                    </TableCell>
+                  </Hidden>
+                  <TableCell className={selected ? classes.cellSelected : classes.cell}>
+                    {humanFileSize(file.size)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
 }
 
 DriveFileTable.PropTypes = {};
