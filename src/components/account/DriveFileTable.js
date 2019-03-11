@@ -15,7 +15,12 @@ const styles = theme => ({
     tableRowSelected: {
         backgroundColor: "#E8EAF6!important",
     },
+    cell: {
+        fontSize: "14px!important",
+        fontWeight: "400",
+    },
     cellSelected: {
+        fontSize: "14px!important",
         color: "#303F9F",
         fontWeight: "500",
     },
@@ -84,19 +89,19 @@ class DriveFileTable extends React.Component {
                             >
                                 <TableCell component="th"
                                            scope="row"
-                                           className={selected && classes.cellSelected}
+                                           className={selected ? classes.cellSelected : classes.cell}
                                 >
                                     {file.name}
                                 </TableCell>
                                 <Hidden lgDown>
-                                    <TableCell className={selected && classes.cellSelected}>
+                                    <TableCell className={selected ? classes.cellSelected : classes.cell}>
                                         {file.id}
                                     </TableCell>
                                 </Hidden>
-                                <TableCell className={selected && classes.cellSelected}>
+                                <TableCell className={selected ? classes.cellSelected : classes.cell}>
                                     {file.mimeType}
                                 </TableCell>
-                                <TableCell className={selected && classes.cellSelected}>{humanFileSize(file.size)}
+                                <TableCell className={selected ? classes.cellSelected : classes.cell}>{humanFileSize(file.size)}
                                 </TableCell>
                             </TableRow>
                         );
