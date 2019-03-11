@@ -105,7 +105,7 @@ class DriveAccountPage extends React.Component {
   };
 
   handleRowClick = (account) => {
-    navigationService.goToAccount(account._id)
+    navigationService.goToAccount(account.id)
 
   };
 

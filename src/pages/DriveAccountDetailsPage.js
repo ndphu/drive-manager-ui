@@ -91,7 +91,7 @@ class DriveAccountDetailsPage extends React.Component {
   };
 
   handleDownloadClick = (file) => {
-    accountService.getDownloadLink(this.state.account._id, file.id).then(resp => {
+    accountService.getDownloadLink(this.state.account.id, file.id).then(resp => {
       const link = resp.link;
       console.log(link)
     });
