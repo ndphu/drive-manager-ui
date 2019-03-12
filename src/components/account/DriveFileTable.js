@@ -41,6 +41,18 @@ const styles = theme => ({
   grow: {
     flexGrow: 1,
   },
+  tableWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: theme.spacing.unit * 2,
+    paddingTop: 0,
+    top: 96,
+    overflowY: 'scroll',
+    backgroundColor: "white",
+  }
+
 
 });
 
@@ -81,7 +93,6 @@ class DriveFileTable extends React.Component {
           <Toolbar variant={'dense'}>
             <Typography
               variant="title"
-              gutterBottom
               color={"primary"}>
               {accountName}
             </Typography>
@@ -103,54 +114,65 @@ class DriveFileTable extends React.Component {
               </IconButton>
             </React.Fragment>
             }
-            <IconButton aria-label="Refresh" className={classes.margin}
-                        onClick={onRefreshClick}>
-              <RefreshIcon color={'primary'}/>
-            </IconButton>
-            <IconButton aria-label="Upload" className={classes.margin}
-                        onClick={onUploadClick}>
-              <UploadIcon color={'primary'}/>
-            </IconButton>
+            <Typography
+              color="inherit"
+              style={{
+                borderRight: '2px solid lightgrey',
+                paddingTop: '0.9em',
+                paddingBottom: '0.9em',
+                marginLeft: 8,
+                marginRight: 8
+              }}
+            >
+            </Typography>
+            <div>
+              <IconButton aria-label="Refresh" className={classes.margin}
+                          onClick={onRefreshClick}>
+                <RefreshIcon color={'primary'}/>
+              </IconButton>
+              <IconButton aria-label="Upload" className={classes.margin}
+                          onClick={onUploadClick}>
+                <UploadIcon color={'primary'}/>
+              </IconButton>
+            </div>
           </Toolbar>
           <Divider/>
         </div>
-        <Table>
-          <TableBody>
-            {files.map(file => {
-              let selected = this.state.selected.indexOf(file.id) >= 0;
-              return (
-                <TableRow key={file.id}
-                          selected={selected}
-                          classes={{selected: classes.tableRowSelected}}
-                          onClick={(e) => {
-                            if (e.detail > 1) {
-                              return;
-                            }
-                            this.toggleSelected(file.id);
-                          }}
-                          onDoubleClick={() => {
-                            alert(file.name);
-                          }}
-                >
-                  <TableCell component="th"
-                             scope="row"
-                             className={selected ? classes.cellSelected : classes.cell}
+        <div className={classes.tableWrapper}>
+          <Table>
+            <TableBody>
+              {files.map(file => {
+                let selected = this.state.selected.indexOf(file.id) >= 0;
+                return (
+                  <TableRow key={file.id}
+                            selected={selected}
+                            classes={{selected: classes.tableRowSelected}}
+                            onClick={(e) => {
+                              if (e.detail > 1) {
+                                return;
+                              }
+                              this.toggleSelected(file.id);
+                            }}
+                            onDoubleClick={() => {
+                              alert(file.name);
+                            }}
                   >
-                    {file.name}
-                  </TableCell>
-                  <Hidden lgDown>
-                    <TableCell className={selected ? classes.cellSelected : classes.cell}>
-                      {file.id}
+                    <TableCell component="th"
+                               scope="row"
+                               className={selected ? classes.cellSelected : classes.cell}
+                    >
+                      {file.name}
                     </TableCell>
-                  </Hidden>
-                  <TableCell className={selected ? classes.cellSelected : classes.cell}>
-                    {humanFileSize(file.size)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    <TableCell className={selected ? classes.cellSelected : classes.cell}>
+                      {humanFileSize(file.size)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+
       </div>
     );
   }

@@ -24,13 +24,10 @@ import {createWriteStream} from 'streamsaver';
 
 const styles = theme => ({
   root: {
-    ...theme.mixins.gutters(),
-    margin: theme.spacing.unit * 2,
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing.unit,
     },
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
+    backgroundColor: 'white',
   },
   accountName: {
     ...theme.mixins.gutters(),
@@ -220,7 +217,7 @@ class DriveAccountDetailsPage extends React.Component {
       </Dialog>;
 
     return (
-      <Paper className={classes.root} elevation={1}>
+      <div className={classes.root}>
         {dialog}
         {account &&
         <div>
@@ -244,7 +241,7 @@ class DriveAccountDetailsPage extends React.Component {
                style={{display: 'none'}}
                onChange={this.onFileSelected}
                multiple/>
-      </Paper>
+      </div>
     );
   }
 }
