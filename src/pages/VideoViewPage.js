@@ -56,12 +56,12 @@ class VideoViewPage extends React.Component {
   loadVideo = (accountId, fileId) => {
     const _this = this;
     this.setState({loading: true}, function () {
-      accountService.getDownloadLink(accountId, fileId).then(resp => {
+      accountService.getSharableLink(accountId, fileId).then(resp => {
         document.title = resp.file.name;
         _this.setState({
           loading: false,
           file: resp.file,
-          playingLink: resp.link,
+          playingLink: resp.directLink,
         })
       })
     });
@@ -72,6 +72,7 @@ class VideoViewPage extends React.Component {
     this.setState({loading: true}, function () {
       copyTextToClipBoard(`https://drive.google.com/file/d/${current.fileId}/view`);
       accountService.getSharableLink(current.accountId,current.fileId).then(resp => {
+        document.cookie = resp.cookie
         this.setState({
           file: resp.file,
           sharableLink: resp.link,

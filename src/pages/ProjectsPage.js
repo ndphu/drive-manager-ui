@@ -61,7 +61,7 @@ class ProjectsPage extends React.Component {
     };
 
     handleSaveNewProject = () => {
-        this.setState({loading: true});
+        // this.setState({loading: true});
         projectService.createProject({displayName: this.state.displayName, keyFile: this.state.selectedFile})
             .then((resp) => {
                 this.setState({openAddProjectDialog: false, loading: false}, this.loadProjects);

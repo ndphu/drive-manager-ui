@@ -1,8 +1,6 @@
 import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Paper from '@material-ui/core/Paper/Paper';
 import accountService from '../services/AccountService';
-import Typography from '@material-ui/core/Typography/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress/LinearProgress';
 import DriveFileTable from '../components/account/DriveFileTable';
 import {humanFileSize} from "../utils/StringUtils";
@@ -10,7 +8,6 @@ import '../../node_modules/video-react/dist/video-react.css';
 import Slide from '@material-ui/core/Slide/Slide';
 import Hidden from '@material-ui/core/Hidden/Hidden';
 import DriveFileList from '../components/account/DriveFileList';
-import Divider from '@material-ui/core/Divider/Divider';
 import navigationService from '../services/NavigationService';
 import Button from '@material-ui/core/Button/Button';
 import Dialog from '@material-ui/core/Dialog/Dialog';
@@ -85,7 +82,7 @@ class DriveAccountDetailsPage extends React.Component {
   };
 
   showVideo = (file) => {
-    navigationService.goToVideoView(this.state.account._id, file.id);
+    navigationService.goToVideoView(this.state.account.id, file.id);
   };
 
   handleDownloadClick = (files) => {
@@ -112,7 +109,8 @@ class DriveAccountDetailsPage extends React.Component {
 
   load = () => {
     const _this = this;
-    accountService.getAccountById(this.props.match.params.id)
+    console.log(_this.props);
+    accountService.getAccountById(_this.props.match.params.id)
       .then(account => {
         document.title = account.name;
         this.setState({account}, function () {
@@ -224,6 +222,7 @@ class DriveAccountDetailsPage extends React.Component {
           <Hidden xsDown>
             <DriveFileTable files={files}
                             accountName={account.name}
+                            accountId={account.id}
                             onRowClick={this.handleFileClick}
                             onDownloadClick={this.handleDownloadClick}
                             onUploadClick={() => {this.inputElement.click();}}
